@@ -1,0 +1,5 @@
+typer
+m3u8
+requests
+tqdm
+selenium
