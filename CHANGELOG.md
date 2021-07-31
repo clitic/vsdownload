@@ -1,6 +1,12 @@
 # CHANGELOG.md
 
-## 1.0.52 (Unreleased)
+## 1.0.54 (Unreleased)
+
+Bug Fixes:
+
+- Unnecessary clean up task for single threaded downloads
+
+## 1.0.52 (29/07/2021)
 
 Features:
 

@@ -95,7 +95,7 @@ This error maybe caused by incorrect segment uri which is auto parsed by vsdownl
 
 Steps resolve this error:
 
-1. Check for m3u8 uri and other ts files uris from your browser's network logs or use **vsdownload capture** command. you will notice a comman uri attached to very ts file uri then note it down as **blob**.
+1. Check for m3u8 uri and other ts files uri/s from your browser's network logs or use **vsdownload capture** command. you will notice a comman uri attached to very ts file uri, then note it down as **blob**.
 
 ```
 Example:
@@ -105,7 +105,7 @@ Example:
 5. https://xyz.in/283678-293/stream-hls/stream_0_high_02.ts
 4. https://xyz.in/283678-293/stream-hls/stream_0_high_03.ts
 
-Blob (comman uri): https://xyz.in/283678-293/stream-hls/
+Blob (comman uri / base endpoint): https://xyz.in/283678-293/stream-hls/
 ```
 
 2. After getting a blob uri try to download stream by using this command.

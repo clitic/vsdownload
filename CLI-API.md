@@ -37,8 +37,8 @@ $ vsdownload capture [OPTIONS] URL
 **Options**:
 
 * `--output TEXT`: output website m3u8 capture logs in which path  [default: log.json]
-* `--driver TEXT`: path of chrome driver which selenium going to use
-* `--scan-ext TEXT`: scan network logs until --scan-ext extension is found in any of url  [default: ts]
+* `--driver TEXT`: path of chrome driver for selenium
+* `--scan-ext TEXT`: scan network logs until --scan-ext extension is found in any one of url  [default: ts]
 * `--help`: Show this message and exit.
 
 ## `vsdownload save`
@@ -57,13 +57,13 @@ $ vsdownload save [OPTIONS] INPUT
 
 **Options**:
 
-* `-o, --output TEXT`: path for output for downloaded ts file  [default: merged.ts]
-* `-t, --threads INTEGER`: download ts files in multiple threads  [default: 1]
-* `-b, --blob TEXT`: specific site blob which is used for making a full url from m3u8 segments uri
-* `--user-agent TEXT`: by default make a request to url without user agent header
+* `-o, --output TEXT`: path for output for downloaded video stream file  [default: merged.ts]
+* `-t, --threads INTEGER`: download multiple ts files in parallel threads  [default: 1]
+* `-b, --blob TEXT`: endpoint base url for all segments
+* `--user-agent TEXT`: by default make a request to url with default user agent header
 * `--chunk-size INTEGER`: chunk size for downloading ts files in kilobytes  [default: 1024]
 * `--ffmpeg-path TEXT`: path of ffmpeg binary  [default: ffmpeg]
 * `--tempdir TEXT`: directory for saving temporary ts files when downloading in mutiple threads  [default: temptsfiles]
-* `--timeout INTEGER`: when using threads waiting time for tasks to perform in seconds  [default: 5]
+* `--timeout INTEGER`: waiting time for post tasks to perform after downloading stream (in seconds)  [default: 5]
 * `--pre-select INTEGER`: pre select a url from log.json file
 * `--help`: Show this message and exit.
