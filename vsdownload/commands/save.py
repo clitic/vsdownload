@@ -91,17 +91,6 @@ class process_m3u8:
 			print("error: bad m3u8 url/file")
 			sys.exit(1)
 
-	def _ffmpeg_covert_task(self):
-		if self.args.output.endswith(".ts") is False:
-			print()
-			print("running ffmpeg convert task")
-			try:
-				subprocess.run([self.args.ffmpeg_path, "-i", self.merged_tsfile_path, "-c", "copy", self.args.output])
-			except:
-				print(f"info: temporary merged ts file is saved at {self.merged_tsfile_path}")
-				print("error: ts conversion failed")
-				sys.exit(1)
-
 	def _ts_merge_task(self, total_ts_files):
 		print()
 		print("ts files merge task")
@@ -115,11 +104,22 @@ class process_m3u8:
 					with open(f"{self.args.tempdir}/{i}.ts", "rb") as f2:
 						f.write(f2.read())
 
-				self._ffmpeg_covert_task()
-
 		except FileNotFoundError:
 			print("error: some ts files are missing")
 			sys.exit(1)
+			
+	def _ffmpeg_covert_task(self):
+		if self.args.output.endswith(".ts") is False:
+			print()
+			print("running ffmpeg convert task")
+			print(f"starting in {self.args.timeout} seconds...")
+
+			try:
+				subprocess.run([self.args.ffmpeg_path, "-i", self.merged_tsfile_path, "-c", "copy", self.args.output])
+			except:
+				print(f"info: temporary merged ts file is saved at {self.merged_tsfile_path}")
+				print("error: ts conversion failed")
+				sys.exit(1)
 
 	def _clean_up_task(self):
 		print()
@@ -182,10 +182,9 @@ class process_m3u8:
 				
 				self._download_status_sync(total_ts_files, ts_file_size, start, process_segments)
 
-		self._ffmpeg_covert_task()
-		self._clean_up_task()
-		print()		
-		print(f"file downloaded successfully at: {self.args.output}")
+		if self.args.output.endswith(".ts") is False:
+			self._ffmpeg_covert_task()
+			self._clean_up_task()
 
 	@utils.threaded
 	def _download_segment_in_thread(self, parsed_links, segment, process_segments, total_ts_files):
@@ -239,10 +238,8 @@ class process_m3u8:
 				time.sleep(self.args.timeout)
 
 		self._ts_merge_task(total_ts_files)
-		self._clean_up_task()
-		print()		
-		print(f"file downloaded successfully at: {self.args.output}")
-		
+		self._ffmpeg_covert_task()
+		self._clean_up_task()	
 
 def command_save(args):
 	process_m3u8_c = process_m3u8(args)
@@ -264,3 +261,6 @@ def command_save(args):
 		process_m3u8_c.download_in_single_thread(segments, parsed_links)
 	else:
 		process_m3u8_c.download_in_mutiple_thread(segments, parsed_links)
+
+	print()		
+	print(f"file downloaded successfully at: {args.output}")
