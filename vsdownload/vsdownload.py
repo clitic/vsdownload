@@ -7,7 +7,7 @@ from typing import Optional
 # python -m vsdownload.vsdownload --help
 # python -m vsdownload.vsdownload save https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/index_0_av.m3u8 -t 5
 
-__version__ = "1.0.54"
+__version__ = "1.0.55"
 app = typer.Typer(name="vsdownload", help="command line extension to download hls video streams from websites, m3u8 files and urls")
 
 

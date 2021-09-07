@@ -18,6 +18,11 @@ class process_m3u8:
 		self.processed_ts_counts = 1
 		self.merged_tsfile_path = os.path.splitext(args.output)[0] + ".ts"
 
+	@staticmethod
+	def runtime_error(msg="no message specified", code=1):
+		print(f"error: {msg}")
+		sys.exit(code)
+
 	def parse_link_file(self):
 		target_url = self.args.input
 
@@ -26,8 +31,7 @@ class process_m3u8:
 				blob = utils.find_blob_by_urls([target_url], "m3u8")
 			
 			else:
-				print("error: -b, --blob not set for local file, basically it is endpoint url for all segments.")
-				sys.exit(1)
+				self.runtime_error("-b, --blob not set for local file, basically it is endpoint url for all segments.")
 
 		else:
 			blob = self.args.blob
@@ -88,8 +92,7 @@ class process_m3u8:
 			return segments
 
 		except:
-			print("error: bad m3u8 url/file")
-			sys.exit(1)
+			self.runtime_error("bad m3u8 url/file")
 
 	def _ts_merge_task(self, total_ts_files):
 		print()
@@ -105,8 +108,7 @@ class process_m3u8:
 						f.write(f2.read())
 
 		except FileNotFoundError:
-			print("error: some ts files are missing")
-			sys.exit(1)
+			self.runtime_error("some ts files are missing")
 			
 	def _ffmpeg_covert_task(self):
 		if self.args.output.endswith(".ts") is False:
@@ -118,8 +120,7 @@ class process_m3u8:
 				subprocess.run([self.args.ffmpeg_path, "-i", self.merged_tsfile_path, "-c", "copy", self.args.output])
 			except:
 				print(f"info: temporary merged ts file is saved at {self.merged_tsfile_path}")
-				print("error: ts conversion failed")
-				sys.exit(1)
+				self.runtime_error("ts conversion failed")
 
 	def _clean_up_task(self):
 		print()
@@ -134,7 +135,7 @@ class process_m3u8:
 			if self.args.output.endswith(".ts") is False:
 				os.remove(self.merged_tsfile_path)
 		except:
-			print("error: clean up task failed")
+			self.runtime_error("clean up task failed")
 
 	def _segment_stream(self, segment, parsed_links):
 		blob = parsed_links[1]
@@ -177,8 +178,8 @@ class process_m3u8:
 						f.write(data)
 
 				except:
-					print("\n\nerror: download failed")
-					sys.exit(1)
+					print("\n\n")
+					self.runtime_error("download failed")
 				
 				self._download_status_sync(total_ts_files, ts_file_size, start, process_segments)
 
@@ -243,7 +244,7 @@ class process_m3u8:
 
 def command_save(args):
 	process_m3u8_c = process_m3u8(args)
-
+	
 	if args.input.endswith(".json"):
 		parsed_links = process_m3u8_c.parse_log_json()	
 	else:

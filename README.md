@@ -11,7 +11,6 @@ command line extension to download hls video streams from websites, m3u8 files a
   <a href="https://www.python.org/downloads/" title="Python Version"><img src="https://img.shields.io/badge/python-%3E=_3.6-green.svg"></a>
   <a href="LICENSE" title="License: MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
   <a href="https://pypi.org/project/vsdownload/"><img src="https://badge.fury.io/py/vsdownload.svg" alt="PyPi Package Version"></a>
-  <a href="https://pypi.org/project/vsdownload/"><img src="https://snyk.io/advisor/python/vsdownload/badge.svg" alt="Package Health"></a>
   <a href="https://github.com/360modder/vsdownload"><img src="https://img.shields.io/github/repo-size/360modder/vsdownload.svg" alt="Repository Size"></a>
 </p>
 
@@ -41,7 +40,7 @@ Requires*
 pip install vsdownload
 ```
 
-Or install from github repositoray.
+Or install from github repository.
 
 ```bash
 pip install https://github.com/360modder/vsdownload/archive/master.zip
@@ -142,7 +141,7 @@ ffmpeg -i merged_video_stream.ts -i merged_audio_stream.ts -c copy merged_video_
 
 ## Todos
 
-- pause/resume feature support
+- pause/resume support
 
 ## License
 

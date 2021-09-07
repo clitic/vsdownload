@@ -1,6 +1,6 @@
 # CHANGELOG.md
 
-## 1.0.54 (Unreleased)
+## 1.0.55 (Unreleased)
 
 Bug Fixes:
 
