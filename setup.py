@@ -29,7 +29,7 @@ with open("requirements.txt") as f:
 setup(
     name="vsdownload",
     version=get_version(),
-    description="command line extension to download hls video streams from websites, m3u8 files and urls",
+    description="command line program to download hls video streams from websites, m3u8 files and urls",
     long_description=README,
     long_description_content_type="text/markdown",
     keywords=["m3u8", "ts", "video", "stream", "downloader", "m3u8downloader"],
@@ -38,13 +38,6 @@ setup(
     author_email="apoorv9450@gmail.com",
     license="MIT",
     python_requires=">=3.6",
-    classifiers=[
-        "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-    ],
     packages=["vsdownload", "vsdownload/commands"],
     include_package_data=True,
     install_requires=REQUIREMENTS,

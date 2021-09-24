@@ -17,20 +17,20 @@ def find_urls_by_ext(string, ext, commanurls=True):
 
 		return urls
 
-def find_blob_by_urls(listofurls, ext, static=True):
+def find_baseurl_by_urls(listofurls, ext, static=True):
 	regex = re.compile(rf"[^/][a-zA-Z0-9-._%]*\.{ext}")
 
-	possibleblobs = []
+	possible_base_urls = []
 	for link in listofurls:
 		matches = re.findall(regex, link)
 		for match in matches:
-			possibleblobs.append(link.split(match)[0])
+			possible_base_urls.append(link.split(match)[0])
 
 	try:
 		if static:
-			return statistics.mode(possibleblobs)
+			return statistics.mode(possible_base_urls)
 		else:
-			return possibleblobs[0]
+			return possible_base_urls[0]
 	except:
 		return []
 

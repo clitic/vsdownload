@@ -6,17 +6,42 @@ import os
 import shutil
 import subprocess
 import time
-import urllib.parse
 import m3u8
+import urllib.parse
+from concurrent.futures import ThreadPoolExecutor
 from . import utils
 
 
-class process_m3u8:
+class ProcessM3U8:
+
 	def __init__(self, args):
 		self.args = args
 		self.merged_file_size = 0
-		self.processed_ts_counts = 1
 		self.merged_tsfile_path = os.path.splitext(args.output)[0] + ".ts"
+		# check for ffmpeg installation
+		if not args.output.endswith(".ts"):
+			try:
+				subprocess.run([args.ffmpeg_path, "-version"])
+			except FileNotFoundError:
+				self.runtime_error("ffmpeg is not installed, try using --ffmpeg-path path/to/ffmpeg.exe")
+		# downloading clients and sessions
+		self.http_client = m3u8.DefaultHTTPClient()
+		self.download_session = requests.Session()
+		# updating headers
+		self.headers = {}
+		if args.headers is not None:
+			with open(self.args.headers) as f:
+				self.headers = json.load(f)
+			
+			self.download_session.headers.update(self.headers)
+			print(f"headers are updated to: {self.download_session.headers}")
+		# updating proxies
+		proxies = {}
+		if args.proxy_address is not None:
+			proxies["https" if args.proxy_address.startswith("https") else "http"] = args.proxy_address
+			self.http_client = m3u8.DefaultHTTPClient(proxies)
+			self.download_session.proxies.update(proxies)
+			print(f"proxies are updated to: {self.download_session.proxies}")
 
 	@staticmethod
 	def runtime_error(msg="no message specified", code=1):
@@ -26,17 +51,15 @@ class process_m3u8:
 	def parse_link_file(self):
 		target_url = self.args.input
 
-		if self.args.blob is None:
+		if self.args.baseurl is None:
 			if target_url.startswith("http"):
-				blob = utils.find_blob_by_urls([target_url], "m3u8")
-			
+				baseurl = utils.find_baseurl_by_urls([target_url], "m3u8")
 			else:
-				self.runtime_error("-b, --blob not set for local file, basically it is endpoint url for all segments.")
-
+				self.runtime_error("-b, --baseurl not set for local m3u8 file.")
 		else:
-			blob = self.args.blob
+			baseurl = self.args.baseurl
 
-		return target_url, blob
+		return target_url, baseurl
 
 	def parse_log_json(self):
 		with open(self.args.input) as f:
@@ -55,19 +78,19 @@ class process_m3u8:
 		else:
 			target_url = json_data["m3u8_urls"][self.args.pre_select]
 		
-		if self.args.blob is None:
-			blob = json_data["blob"]
+		if self.args.baseurl is None:
+			baseurl = json_data["baseurl"]
 		else:
-			blob = self.args.blob
+			baseurl = self.args.baseurl
 		
-		return target_url, blob
+		return target_url, baseurl
 
 	def parse_m3u8(self, parsed_links):
-		target_url, blob = parsed_links
+		target_url, baseurl = parsed_links
 
 		try:
-			print(f"resolving url/file: {target_url}")
-			m3u8_file = m3u8.load(target_url).data
+			print(f"fetching m3u8 content: {target_url}")
+			m3u8_file = m3u8.load(target_url, headers=self.headers, http_client=self.http_client).data
 			segments = m3u8_file["segments"]
 
 			if segments == []:
@@ -83,185 +106,153 @@ class process_m3u8:
 				print()
 
 				m3u8_playlist_file = m3u8_file["playlists"][selected_playlist - 1]
-				m3u8_full_url = urllib.parse.urljoin(blob, m3u8_playlist_file["uri"]) if m3u8_playlist_file["uri"].startswith("http") is False else m3u8_playlist_file["uri"]
+				m3u8_full_url = urllib.parse.urljoin(baseurl, m3u8_playlist_file["uri"]) if m3u8_playlist_file["uri"].startswith("http") is False else m3u8_playlist_file["uri"]
 
-				print(f"resolving m3u8 playlist url: {m3u8_full_url}")
-				m3u8_file = m3u8.load(m3u8_full_url).data
+				print(f"fetching segments from m3u8 playlist: {m3u8_full_url}")
+				m3u8_file = m3u8.load(m3u8_full_url, headers=self.headers, http_client=self.http_client).data
 				segments = m3u8_file["segments"]
 			
 			return segments
 
-		except:
-			self.runtime_error("bad m3u8 url/file")
+		except Exception as e:
+			print(e.__str__())
+			self.runtime_error("failed to fetch m3u8 content")
 
+	# this function uses binary merge method for merging ts files
 	def _ts_merge_task(self, total_ts_files):
 		print()
-		print("ts files merge task")
+		print("ts file merge task")
 		print(f"starting in {self.args.timeout} seconds...")
 		time.sleep(self.args.timeout)
 		print()
 
-		try:
-			with open(self.merged_tsfile_path, "wb") as f:
-				for i in tqdm.trange(1, total_ts_files + 1):
+		with open(self.merged_tsfile_path, "wb") as f:
+			for i in tqdm.trange(1, total_ts_files + 1):
+				try:
 					with open(f"{self.args.tempdir}/{i}.ts", "rb") as f2:
 						f.write(f2.read())
-
-		except FileNotFoundError:
-			self.runtime_error("some ts files are missing")
-			
+				except FileNotFoundError:
+					self.runtime_error(f"{i}.ts file is missing")
+				
 	def _ffmpeg_covert_task(self):
-		if self.args.output.endswith(".ts") is False:
+		if not self.args.output.endswith(".ts") :
 			print()
 			print("running ffmpeg convert task")
 			print(f"starting in {self.args.timeout} seconds...")
 
 			try:
 				subprocess.run([self.args.ffmpeg_path, "-i", self.merged_tsfile_path, "-c", "copy", self.args.output])
-			except:
+			except Exception as e:
+				print(e.__str__())
 				print(f"info: temporary merged ts file is saved at {self.merged_tsfile_path}")
 				self.runtime_error("ts conversion failed")
 
 	def _clean_up_task(self):
-		print()
-		print("clean up task")
-		print(f"starting in {self.args.timeout} seconds...")
-		time.sleep(self.args.timeout)
+		if self.args.cleanup:
+			print()
+			print("clean up task")
+			print(f"starting in {self.args.timeout} seconds...")
+			time.sleep(self.args.timeout)
 
-		try:
-			if self.args.threads < 1:
+			try:
 				shutil.rmtree(self.args.tempdir)
-				
-			if self.args.output.endswith(".ts") is False:
-				os.remove(self.merged_tsfile_path)
-		except:
-			self.runtime_error("clean up task failed")
+					
+				if not self.args.output.endswith(".ts"):
+					os.remove(self.merged_tsfile_path)
+			except Exception as e:
+				print(e.__str__())
+				self.runtime_error("clean up task failed")
 
-	def _segment_stream(self, segment, parsed_links):
-		blob = parsed_links[1]
-		segment_full_url = urllib.parse.urljoin(blob, segment["uri"]) if segment["uri"].startswith("http") is False else segment["uri"]
+	def _download_segment_in_thread(self, parsed_links, segment, process_segments, total_ts_files):
+		segment_full_url = urllib.parse.urljoin(parsed_links[1], segment["uri"]) if not segment["uri"].startswith("http") else segment["uri"]
+		filename = f"{self.args.tempdir}/{segment['index']}.ts"
 
-		if self.args.user_agent is None:
-			response = requests.get(segment_full_url, stream=True)
-		else:
-			headers = {"User-Agent": self.args.user_agent}
-			response = requests.get(segment_full_url, stream=True, headers=headers)
-			
-		ts_file_size = int(response.headers.get("Content-Length", 0))
-		self.merged_file_size += ts_file_size
-		progress = response.iter_content(self.args.chunk_size)
+		# dumping segment info to a json file
+		with open(f"{self.args.tempdir}/{segment['index']}_info.json", "w") as f:
+					json.dump({"segment": segment}, f, indent=4)
 
-		return progress, ts_file_size
-
-	def _download_status_sync(self, total_ts_files, ts_file_size, start, process_segments):
-		downloaded_data = self.merged_file_size
-		estimated_size = (self.merged_file_size / self.processed_ts_counts) * (total_ts_files)
-		
 		try:
-			download_speed = (ts_file_size / (time.time() - start)) * self.args.threads
-		except ZeroDivisionError:
-			download_speed = 0
-		
-		process_segments.set_description(f"{utils.convertbytes(downloaded_data)[0]}/{utils.convertbytes(estimated_size)[0]}, {utils.convertbytes(download_speed)[0].replace(' ', '')}/s")
-		self.processed_ts_counts += 1
+			response = self.download_session.get(segment_full_url, stream=True)	
+			ts_file_size = int(response.headers.get("Content-Length", 0))
+			start = time.perf_counter()
 
-	def download_in_single_thread(self, segments, parsed_links):
-		process_segments = tqdm.tqdm(segments, desc="0 KB/0 KB, 0KB/s", unit="segment")
-		total_ts_files = len(segments)
-
-		with open(self.merged_tsfile_path, "wb") as f:
-			for segment in process_segments:
-				try:
-					segment_stream, ts_file_size = self._segment_stream(segment, parsed_links)
-					start = time.time()
-					for data in segment_stream:
+			# skip redownloading of ts file if it exists with original size
+			if os.path.isfile(filename):
+				if round(os.stat(filename).st_size) != round(ts_file_size):
+					with open(filename, "wb") as f:
+						for data in response.iter_content(self.args.chunk_size):
+							f.write(data)
+			else:
+				with open(filename, "wb") as f:
+					for data in response.iter_content(self.args.chunk_size):
 						f.write(data)
 
-				except:
-					print("\n\n")
-					self.runtime_error("download failed")
-				
-				self._download_status_sync(total_ts_files, ts_file_size, start, process_segments)
+		except Exception as e:
+			# update retrycount on each failed call
+			if segment["retrycount"] <= self.args.retry_count:
+				segment["retrycount"] = segment["retrycount"] + 1
 
-		if self.args.output.endswith(".ts") is False:
-			self._ffmpeg_covert_task()
-			self._clean_up_task()
+				with open(f"{self.args.tempdir}/{segment['index']}_info.json", "w") as f:
+					json.dump({"segment": segment}, f, indent=4)
 
-	@utils.threaded
-	def _download_segment_in_thread(self, parsed_links, segment, process_segments, total_ts_files):
-		try:
-			segment_stream, ts_file_size = self._segment_stream(segment, parsed_links)
-			start = time.time()
-			with open(f"{self.args.tempdir}/{segment['index']}.ts", "wb") as f:
-				for data in segment_stream:
-					f.write(data)
+				print(f"info: segment {segment['index']} added to retry queue {segment['retrycount']}")
+				return 1
+			else:
+				print("\nerror: download failed\n")
+				print(e.__str__())
+				os._exit(1)
 
-		except:
-			print("\nerror: download failed\n")
-			os._exit(1)
-
+		# download status sync
 		process_segments.update(1)
-		self._download_status_sync(total_ts_files, ts_file_size, start, process_segments)
+		self.merged_file_size += ts_file_size
+		estimated_size = (self.merged_file_size / process_segments.n) * (total_ts_files)
+		download_speed = ts_file_size / (time.perf_counter() - start)
+		process_segments.set_description(f"{utils.convertbytes(self.merged_file_size)[0]}/{utils.convertbytes(estimated_size)[0]}, " + 
+										 f"{utils.convertbytes(download_speed)[0].replace(' ', '')}/s")
 
 	def download_in_mutiple_thread(self, segments, parsed_links):
-		if os.path.exists(self.args.tempdir):
+		if os.path.exists(self.args.tempdir) and self.args.cleanup:
 			shutil.rmtree(self.args.tempdir)
-
-		os.mkdir(self.args.tempdir)
+			os.mkdir(self.args.tempdir)
 
 		total_ts_files = len(segments)
 		processed_ts_index = 1
-
+		
 		with tqdm.tqdm(total=total_ts_files, desc="0 KB/0 KB, 0KB/s", unit="segment") as process_segments:
-			while segments != []:
-				active_threads = []
-
-				for _ in range(self.args.threads):
-					try:
-						segments_dict = segments.pop(0)
-					except IndexError:
-						break
-
-					segments_dict["index"] = processed_ts_index
+			with ThreadPoolExecutor(max_workers=self.args.threads) as executor:
+				for segment_dict in segments:
+					segment_dict["index"] = processed_ts_index
+					segment_dict["retrycount"] = 0
 					processed_ts_index += 1
-					current_thread = self._download_segment_in_thread(parsed_links, segments_dict, process_segments, total_ts_files)
-					active_threads.append(current_thread)
-				
-				try:
-					for current_thread in active_threads:
-						current_thread.join()
+					executor.submit(self._download_segment_in_thread, parsed_links, segment_dict, process_segments, total_ts_files)
 
-				except KeyboardInterrupt:
-					print("\n\nerror: download failed\n")
-					os._exit(1)
-
+			# retry pool
 			while process_segments.n != total_ts_files:
-				time.sleep(self.args.timeout)
-
+				with ThreadPoolExecutor(max_workers=self.args.threads) as executor:
+					for i in range(1, total_ts_files + 1):
+						with open(f"{self.args.tempdir}/{i}_info.json") as f:
+							segment_dict = json.load(f)["segment"]
+						
+						if segment_dict["retrycount"] != 0 and segment_dict["retrycount"] <= self.args.retry_count:
+							executor.submit(self._download_segment_in_thread, parsed_links, segment_dict, process_segments, total_ts_files)
+						elif segment_dict["retrycount"] >= self.args.retry_count:
+							break
+						
 		self._ts_merge_task(total_ts_files)
 		self._ffmpeg_covert_task()
 		self._clean_up_task()	
 
 def command_save(args):
-	process_m3u8_c = process_m3u8(args)
+	process_m3u8_c = ProcessM3U8(args)
 	
 	if args.input.endswith(".json"):
 		parsed_links = process_m3u8_c.parse_log_json()	
 	else:
 		parsed_links = process_m3u8_c.parse_link_file()
 
-	print(f"base endpoint is set to: {parsed_links[1]}")
-
+	print(f"baseurl is set to: {parsed_links[1]}")
 	segments = process_m3u8_c.parse_m3u8(parsed_links)
-
 	print(f"file will be saved at: {args.output}")
-	print(f"starting download in {args.threads} thread/s")
-	print()
-
-	if args.threads == 1:
-		process_m3u8_c.download_in_single_thread(segments, parsed_links)
-	else:
-		process_m3u8_c.download_in_mutiple_thread(segments, parsed_links)
-
-	print()		
-	print(f"file downloaded successfully at: {args.output}")
+	print(f"starting download in {args.threads} thread/s\n")
+	process_m3u8_c.download_in_mutiple_thread(segments, parsed_links)	
+	print(f"\nfile downloaded successfully at: {args.output}")

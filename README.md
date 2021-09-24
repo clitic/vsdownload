@@ -1,6 +1,6 @@
 # VS Download - Video Stream Download
 
-command line extension to download hls video streams from websites, m3u8 files and urls.
+command line program to download hls video streams from websites, m3u8 files and urls.
 
 <p align="center">
   a compact lightweight m3u8 downloader
@@ -24,6 +24,20 @@ command line extension to download hls video streams from websites, m3u8 files a
   <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/vsdownload.gif">
 </p>
 
+## Features Implemented
+
+- [x] resume support
+- [x] capturing m3u8 links and urls from a website
+- [x] realtime file size prediction and download speed
+- [x] downloding in multiple threads
+- [x] master m3u8 playlist parsing
+- [x] custom headers and proxies
+- [x] retry on error
+- [x] ffmpeg conversion integration
+- [x] platform independent
+- [ ] encrypted playlists
+- [ ] separate video and audio stream 
+
 ## Important Declaration
 
 If you are distributing downloaded video streams, first ensure that you have rights for those video streams or files.
@@ -46,6 +60,8 @@ Or install from github repository.
 pip install https://github.com/360modder/vsdownload/archive/master.zip
 ```
 
+Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.0.76/vsdownload_v1.0.76.exe) from [releases](https://github.com/360modder/vsdownload/releases).
+
 ## Usage
 
 - Capturing m3u8 files from website and downloading hls streams
@@ -60,6 +76,8 @@ vsdownload save log.json
 ```bash
 vsdownload save <m3u8 url or file> -o video.ts
 ```
+
+> Add **--no-cleanup** flag to use resume capabilities
 
 ## How to convert .ts to .mp4, .mkv etc. ?
 
@@ -78,7 +96,7 @@ vsdownload save <m3u8 url or file> --ffmpeg-path <path to ffmpeg binary> -o vide
 
 ## How to speed up downloading speed ?
 
-Downloading ts files with multiple threads would be a good option and also using a higher chunk size will reduce the file i/o operations. vsdownload can handle those things by using some flags.
+Downloading ts files with more multiple worker threads would be a good option and also using a higher chunk size will reduce the file i/o operations. vsdownload can handle those things by using some flags.
 
 Downloading m3u8 files with 16 threads with 4k chunk size.
 
@@ -90,11 +108,11 @@ vsdownload save <m3u8 url or file> --chunk-size 4096 -t 16 -o video.ts
 
 This problem arises when vsdownload makes get request to ts file and it returns a bad response body which results in corrupted downloads.
 
-This error maybe caused by incorrect segment uri which is auto parsed by vsdownload. You can manually override it by following the given steps. 
+This error maybe caused by incorrect segment url which is auto parsed by vsdownload. You can manually override it by following the given steps. 
 
 Steps resolve this error:
 
-1. Check for m3u8 uri and other ts files uri/s from your browser's network logs or use **vsdownload capture** command. you will notice a comman uri attached to very ts file uri, then note it down as **blob**.
+1. Check for m3u8 uri and other ts files uri/s from your browser's network logs or use **vsdownload capture** command. you will notice a comman url attached to very ts file uri, then note it down as **baseurl**.
 
 ```
 Example:
@@ -104,13 +122,13 @@ Example:
 5. https://xyz.in/283678-293/stream-hls/stream_0_high_02.ts
 4. https://xyz.in/283678-293/stream-hls/stream_0_high_03.ts
 
-Blob (comman uri / base endpoint): https://xyz.in/283678-293/stream-hls/
+Baseurl (comman url / base endpoint): https://xyz.in/283678-293/stream-hls/
 ```
 
-2. After getting a blob uri try to download stream by using this command.
+2. After getting a baseurl try to download stream by using this command.
 
 ```bash
-vsdownload save <m3u8 url or file> -b <blob (comman uri)> -o video.ts
+vsdownload save <m3u8 url or file> -b <baseurl> -o video.ts
 ```
 
 ```bash
@@ -125,6 +143,7 @@ Some extra things to try for websites which don't make their hls streams publicl
 
 1. Maintain a connection to server by playing stream in browser or from any other means.
 2. Check for maximum supported parallel connections from server. If it can use more than 1 connection, then streams maybe downloaded by following the above steps.
+3. Use **--proxy-address** flag.
 
 ## How to merge separate hls video and audio streams ?
 
@@ -138,10 +157,6 @@ ffmpeg -i merged_video_stream.ts -i merged_audio_stream.ts -c copy merged_video_
 
 - [CLI-API.md](CLI-API.md)
 - [CHANGELOG.md](CHANGELOG.md)
-
-## Todos
-
-- pause/resume support
 
 ## License
 
