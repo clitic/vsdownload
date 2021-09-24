@@ -214,7 +214,9 @@ class ProcessM3U8:
 		if os.path.exists(self.args.tempdir) and self.args.cleanup:
 			shutil.rmtree(self.args.tempdir)
 			os.mkdir(self.args.tempdir)
-
+		elif not os.path.exists(self.args.tempdir):
+			os.mkdir(self.args.tempdir)
+			
 		total_ts_files = len(segments)
 		processed_ts_index = 1
 		
