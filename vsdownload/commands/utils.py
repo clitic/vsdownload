@@ -34,7 +34,6 @@ def find_baseurl_by_urls(listofurls, ext, static=True):
 	except:
 		return []
 
-
 def convertbytes(bytesval):
 	for unit in ["bytes", "KB", "MB", "GB", "TB"]:
 		if bytesval < 1024.0:

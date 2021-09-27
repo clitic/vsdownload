@@ -1,5 +1,19 @@
 # CHANGELOG.md
 
+## 1.0.98 (27/09/2021)
+
+Features:
+
+- Now capable to download seperate video, audio and subtitle (webvtt) stream
+- Beta support for aes standard cbc encrypted playlists
+
+Changes:
+
+- More clean checking of ffmpeg path
+- `ProcessM3U8.parse_m3u8()` returns `m3u8.PlaylistList`
+- Now using m3u8's absolute uri and *--baseurl* is set to None by default
+- `--retry-count` is set to 10 by default
+
 ## 1.0.76 (24/09/2021)
 
 Features:

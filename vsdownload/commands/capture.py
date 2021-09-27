@@ -24,7 +24,7 @@ def command_capture(args):
 
     m3u8_links = utils.find_urls_by_ext(f"{logs}", "m3u8")
     json_data = {"m3u8_urls": m3u8_links}
-    json_data["baseurl"] = utils.find_baseurl_by_urls(m3u8_links, "m3u8")
+    json_data["baseurl"] = utils.find_baseurl_by_urls(m3u8_links, "m3u8") if args.baseurl else None
 
     pprint(json_data)
 

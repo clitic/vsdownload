@@ -1,5 +1,6 @@
 typer
-m3u8
 requests
+m3u8
 tqdm
 selenium
+pycryptodome

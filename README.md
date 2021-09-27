@@ -26,17 +26,20 @@ command line program to download hls video streams from websites, m3u8 files and
 
 ## Features Implemented
 
-- [x] resume support
+- [x] auto binary merge for ts segments
+- [x] auto decrypt for aes standard cbc encrypted playlists (beta)
+- [x] auto mux for seperate video, audio and subtitle (webvtt) stream
 - [x] capturing m3u8 links and urls from a website
-- [x] realtime file size prediction and download speed
-- [x] downloding in multiple threads
-- [x] master m3u8 playlist parsing
-- [x] custom headers and proxies
-- [x] retry on error
+- [x] custom headers, proxies, key and iv
+- [x] downloading in multiple threads
 - [x] ffmpeg conversion integration
+- [x] master m3u8 playlist parsing
 - [x] platform independent
-- [ ] encrypted playlists
-- [ ] separate video and audio stream 
+- [x] realtime file size prediction (arithmetic mean) and download speed
+- [x] resume support
+- [x] retry on error
+
+> Create an issuse to request a new feature
 
 ## Important Declaration
 
@@ -144,14 +147,6 @@ Some extra things to try for websites which don't make their hls streams publicl
 1. Maintain a connection to server by playing stream in browser or from any other means.
 2. Check for maximum supported parallel connections from server. If it can use more than 1 connection, then streams maybe downloaded by following the above steps.
 3. Use **--proxy-address** flag.
-
-## How to merge separate hls video and audio streams ?
-
-First download video and audio streams separately with **vsdownload** and then use [ffmpeg](https://www.ffmpeg.org/download.html) to merge them.
-
-```bash
-ffmpeg -i merged_video_stream.ts -i merged_audio_stream.ts -c copy merged_video_audio.mkv
-```
 
 ## Documentations
 

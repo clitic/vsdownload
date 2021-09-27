@@ -39,6 +39,7 @@ $ vsdownload capture [OPTIONS] URL
 * `--output mysite_log.json`: output website m3u8 capture logs in which path  [default: log.json]
 * `--driver chromedriver.exe`: path of chrome driver for selenium
 * `--scan-ext m3u8/ts/mp4`: scan network logs until --scan-ext extension is found in any one of the request url  [default: ts]
+* `--baseurl / --no-baseurl`: detect baseurl (not recommended)  [default: False]
 * `--help`: Show this message and exit.
 
 ## `vsdownload save`
@@ -58,15 +59,15 @@ $ vsdownload save [OPTIONS] INPUT
 **Options**:
 
 * `-o, --output merged.ts/merged.mp4/merged.mkv`: path for output of downloaded video stream file  [default: merged.ts]
-* `-b, --baseurl https://xyz.com/playlist7/`: base url or endpoint for all segments
-* `-t, --threads 1-32`: max thread count for parallel threads to download segments  [default: 5]
 * `--cleanup / --no-cleanup`: delete temporary downloaded segments, add --no-cleanup flag to use resume capabilities  [default: True]
+* `-b, --baseurl https://xyz.com/playlist7/`: base url for all segments, usally needed for local m3u8 file
+* `-t, --threads 1-32`: max thread count for parallel threads to download segments  [default: 5]
 * `--chunk-size INTEGER`: chunk size for downloading ts files (in kilobytes)  [default: 1024]
 * `--headers headers.json`: path of header defining json file which will update headers
 * `--proxy-address http://127.0.0.1:8000`: http or https proxy address to use
 * `--ffmpeg-path c:\ffmpeg\bin\ffmpeg.exe`: path of ffmpeg binary  [default: ffmpeg]
 * `--tempdir directory`: path of directory for saving temporary files while downloading  [default: temptsfiles]
-* `--retry-count INTEGER`: retry count for downloading segment  [default: 15]
+* `--retry-count INTEGER`: retry count for downloading segment  [default: 10]
 * `--timeout time`: waiting time for post tasks to perform after downloading (in seconds)  [default: 5]
 * `--pre-select INTEGER`: pre select a url from log.json file
 * `--help`: Show this message and exit.

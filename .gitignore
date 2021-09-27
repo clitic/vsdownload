@@ -109,4 +109,7 @@ venv.bak/
 
 ##my files
 temptsfiles
+temptsfiles_audio
 merged.ts
+merged_video.ts
+merged_audio.ts
