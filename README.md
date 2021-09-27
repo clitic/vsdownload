@@ -63,7 +63,7 @@ Or install from github repository.
 pip install https://github.com/360modder/vsdownload/archive/master.zip
 ```
 
-Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.0.76/vsdownload_v1.0.76.exe) from [releases](https://github.com/360modder/vsdownload/releases).
+Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.0.98/vsdownload.exe) from [releases](https://github.com/360modder/vsdownload/releases).
 
 ## Usage
 

@@ -64,6 +64,7 @@ $ vsdownload save [OPTIONS] INPUT
 * `-t, --threads 1-32`: max thread count for parallel threads to download segments  [default: 5]
 * `--chunk-size INTEGER`: chunk size for downloading ts files (in kilobytes)  [default: 1024]
 * `--headers headers.json`: path of header defining json file which will update headers
+* `--key-iv 8129819==>8382839`: custom decryption key and iv (key==>iv)
 * `--proxy-address http://127.0.0.1:8000`: http or https proxy address to use
 * `--ffmpeg-path c:\ffmpeg\bin\ffmpeg.exe`: path of ffmpeg binary  [default: ffmpeg]
 * `--tempdir directory`: path of directory for saving temporary files while downloading  [default: temptsfiles]
