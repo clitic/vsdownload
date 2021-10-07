@@ -22,9 +22,9 @@ command line (gui wrapped) program to download hls video streams from websites, 
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/vsdownload.gif">
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_1.jpg" height=300px>
+  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_1.jpg" height=550px>
   &nbsp;&nbsp;&nbsp;
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_2.jpg" height=300px>
+  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_2.jpg" height=550px>
 </p>
 
 
@@ -176,6 +176,25 @@ vsdownload.vsdownload.console_script([
 
 - [CLI-API.md](CLI-API.md)
 - [CHANGELOG.md](CHANGELOG.md)
+
+## Development
+
+- Makefile
+
+```bash
+$ make help
+```
+
+```
+make targets:
+ requirements         install required dependencies
+ updates              updates gui wrapper ui from vsdownload.ui
+ docs                 generates CLI-API.md
+ venv                 create virtual envoirnment
+ package              create vsdownload.exe package
+ gui                  create vsdownload_gui.exe and vsdownload.exe package
+ help                 shows this help message
+```
 
 ## License
 

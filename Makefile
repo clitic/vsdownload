@@ -1,12 +1,25 @@
 VenvActivate := "./env/Scripts/activate.bat"
 
-.PHONY: requirements docs venv package gui updates
+.PHONY: help requirements updates docs venv package gui
+
+help:
+	@echo make targets:
+	@echo  requirements         install required dependencies
+	@echo  updates              updates gui wrapper ui from vsdownload.ui
+	@echo  docs                 generates CLI-API.md
+	@echo  venv                 create virtual envoirnment
+	@echo  package              create vsdownload.exe package
+	@echo  gui                  create vsdownload_gui.exe and vsdownload.exe package
+	@echo  help                 shows this help message
 
 requirements:
 	@pip install --upgrade pip
 	@pip install virtualenv
 	@pip install -r requirements.txt
 	@pip install typer-cli
+
+updates:
+	@pyuic6 vsdownload/vsdownload.ui -x -o vsdownload/vsdownload_ui.py
 
 docs:
 	@typer vsdownload/vsdownload.py utils docs --output CLI-API.md
@@ -37,6 +50,3 @@ gui: venv
 	@powershell -C "Remove-Item dist_cli -Recurse"
 	@powershell -C "Remove-Item vsdownload.spec"
 	@powershell -C "Remove-Item vsdownload_gui.spec"
-
-updates:
-	@pyuic6 vsdownload/vsdownload.ui -x -o vsdownload/vsdownload_ui.py
