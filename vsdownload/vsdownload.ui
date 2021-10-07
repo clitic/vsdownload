@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>vsdownload</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="base_vertical_layout">
+    <item>
+     <widget class="QTabWidget" name="base_tab_widget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="save_page_base_stacked_widget">
+       <attribute name="title">
+        <string>save</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="save_page_base_vertical_layout">
+        <item>
+         <widget class="QScrollArea" name="save_page_scroll_area">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>389</width>
+             <height>436</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <layout class="QGridLayout" name="save_page_basic_grid_layout">
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="outputLineEdit_save"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="inputLabel">
+                <property name="text">
+                 <string>input*</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QSpinBox" name="pre_selectSpinBox">
+                <property name="minimum">
+                 <number>-1</number>
+                </property>
+                <property name="value">
+                 <number>-1</number>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="cleanupLabel_save">
+                <property name="text">
+                 <string>cleanup</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="key_ivLabel">
+                <property name="text">
+                 <string>key_iv</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="2">
+               <widget class="QPushButton" name="save_page_tempdir_btn">
+                <property name="text">
+                 <string>open</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1">
+               <widget class="QLineEdit" name="tempdirLineEdit"/>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="ffmpeg_pathLabel">
+                <property name="text">
+                 <string>ffmpeg_path</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="save_page_output_btn">
+                <property name="text">
+                 <string>save</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="QPushButton" name="save_page_headers_btn">
+                <property name="text">
+                 <string>open</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="tempdirLabel">
+                <property name="text">
+                 <string>tempdir</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="save_page_input_btn">
+                <property name="text">
+                 <string>open</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QCheckBox" name="cleanupCheckBox"/>
+              </item>
+              <item row="5" column="1">
+               <widget class="QSpinBox" name="chunk_sizeSpinBox">
+                <property name="minimum">
+                 <number>1024</number>
+                </property>
+                <property name="maximum">
+                 <number>16384</number>
+                </property>
+                <property name="singleStep">
+                 <number>1024</number>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QLineEdit" name="headersLineEdit"/>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="retry_countLabel">
+                <property name="text">
+                 <string>retry_count</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="chunk_sizeLabel">
+                <property name="text">
+                 <string>chunk_size</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="proxy_addressLabel">
+                <property name="text">
+                 <string>proxy_address</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="1">
+               <widget class="QSpinBox" name="retry_countSpinBox">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="baseurlLineEdit_save"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="threadsLabel">
+                <property name="text">
+                 <string>threads</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QLineEdit" name="proxy_addressLineEdit"/>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="headersLabel">
+                <property name="text">
+                 <string>headers</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="inputLineEdit"/>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="timeoutLabel">
+                <property name="text">
+                 <string>timeout</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="outputLabel_save">
+                <property name="text">
+                 <string>output*</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="1">
+               <widget class="QSpinBox" name="timeoutSpinBox"/>
+              </item>
+              <item row="4" column="1">
+               <widget class="QSpinBox" name="threadsSpinBox">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>16</number>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="2">
+               <widget class="QPushButton" name="save_page_ffmpeg_path_btn">
+                <property name="text">
+                 <string>open</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QLineEdit" name="ffmpeg_pathLineEdit"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="baseurlLabel_save">
+                <property name="text">
+                 <string>baseurl</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QLineEdit" name="key_ivLineEdit"/>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="pre_selectLabel">
+                <property name="text">
+                 <string>pre_select</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="save_page_vertical_spacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="base_stacked_widget_capture_page">
+       <attribute name="title">
+        <string>capture</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="capture_page_base_vertical_layout">
+        <item>
+         <widget class="QScrollArea" name="capture_page_scroll_area">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>406</width>
+             <height>348</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <layout class="QGridLayout" name="capture_page_basic_grid_layout">
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="outputLineEdit_capture"/>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="urlLineEdit"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="scan_extLabel">
+                <property name="text">
+                 <string>scan_ext</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="outputLabel_capture">
+                <property name="text">
+                 <string>output*</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="driverLabel">
+                <property name="text">
+                 <string>driver*</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="driverLineEdit"/>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="scan_extLineEdit"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="urlLabel">
+                <property name="text">
+                 <string>url*</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QCheckBox" name="baseurlCheckBox_capture"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="baseurlLabel_capture">
+                <property name="text">
+                 <string>baseurl</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="capture_page_driver_btn">
+                <property name="text">
+                 <string>open</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QPushButton" name="capture_page_output_btn">
+                <property name="text">
+                 <string>save</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="capture_page_vertical_spacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextBrowser" name="execute_command_text_browser">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>50</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="execute_btn">
+      <property name="text">
+       <string>execute</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>450</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>help</string>
+    </property>
+    <addaction name="action_report_a_bug"/>
+    <addaction name="separator"/>
+    <addaction name="action_about_vsdownload"/>
+    <addaction name="action_about_qt"/>
+   </widget>
+   <addaction name="menu_help"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_report_a_bug">
+   <property name="text">
+    <string>report a bug</string>
+   </property>
+  </action>
+  <action name="action_about_vsdownload">
+   <property name="text">
+    <string>about vsdownload</string>
+   </property>
+  </action>
+  <action name="action_about_qt">
+   <property name="text">
+    <string>about qt</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

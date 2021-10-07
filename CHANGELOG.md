@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 1.1.0 (07/10/2021)
+
+Features:
+
+- Added gui wrapper
+
 ## 1.0.98 (27/09/2021)
 
 Features:

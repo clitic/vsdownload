@@ -1,6 +1,6 @@
 # VS Download - Video Stream Download
 
-command line program to download hls video streams from websites, m3u8 files and urls.
+command line (gui wrapped) program to download hls video streams from websites, m3u8 files and urls.
 
 <p align="center">
   a compact lightweight m3u8 downloader
@@ -22,7 +22,11 @@ command line program to download hls video streams from websites, m3u8 files and
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/vsdownload.gif">
+  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_1.jpg" height=300px>
+  &nbsp;&nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_2.jpg" height=300px>
 </p>
+
 
 ## Features Implemented
 
@@ -33,6 +37,7 @@ command line program to download hls video streams from websites, m3u8 files and
 - [x] custom headers, proxies, key and iv
 - [x] downloading in multiple threads
 - [x] ffmpeg conversion integration
+- [x] gui support
 - [x] master m3u8 playlist parsing
 - [x] platform independent
 - [x] realtime file size prediction (arithmetic mean) and download speed
@@ -63,7 +68,7 @@ Or install from github repository.
 pip install https://github.com/360modder/vsdownload/archive/master.zip
 ```
 
-Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.0.98/vsdownload.exe) from [releases](https://github.com/360modder/vsdownload/releases).
+Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.1.0/vsdownload.exe) / [gui wrapper](https://github.com/360modder/vsdownload/releases/download/v1.1.0/vsdownload_gui.zip) from [releases](https://github.com/360modder/vsdownload/releases).
 
 ## Usage
 
@@ -81,6 +86,13 @@ vsdownload save <m3u8 url or file> -o video.ts
 ```
 
 > Add **--no-cleanup** flag to use resume capabilities
+
+To use gui wrapper, first install PyQt6 and then run **vsdownload-gui**
+
+```bash
+$ pip install PyQt6
+$ vsdownload-gui
+```
 
 ## How to convert .ts to .mp4, .mkv etc. ?
 
@@ -120,12 +132,12 @@ Steps resolve this error:
 ```
 Example:
 
-1. https://xyz.in/283678-293/stream-hls/stream_0_high.m3u8
-2. https://xyz.in/283678-293/stream-hls/stream_0_high_01.ts
-5. https://xyz.in/283678-293/stream-hls/stream_0_high_02.ts
-4. https://xyz.in/283678-293/stream-hls/stream_0_high_03.ts
+1. http://videoserver.com/playlist.m3u8
+2. http://videoserver.com/stream_0.ts
+3. http://videoserver.com/stream_1.ts
+4. http://videoserver.com/stream_2.ts
 
-Baseurl (comman url / base endpoint): https://xyz.in/283678-293/stream-hls/
+Baseurl (comman url / base endpoint): http://videoserver.com/
 ```
 
 2. After getting a baseurl try to download stream by using this command.
@@ -137,7 +149,7 @@ vsdownload save <m3u8 url or file> -b <baseurl> -o video.ts
 ```bash
 Example:
 
-vsdownload save https://xyz.in/283678-293/stream-hls/stream_0_high.m3u8 -b https://xyz.in/283678-293/stream-hls/ -o video.ts
+vsdownload save http://videoserver.com/playlist.m3u8 -b http://videoserver.com/ -o video.ts
 ```
 
 3. If stream doesn't download till now then you can check few options given below.
@@ -147,6 +159,18 @@ Some extra things to try for websites which don't make their hls streams publicl
 1. Maintain a connection to server by playing stream in browser or from any other means.
 2. Check for maximum supported parallel connections from server. If it can use more than 1 connection, then streams maybe downloaded by following the above steps.
 3. Use **--proxy-address** flag.
+
+## Scripting And Automation
+
+```python
+import vsdownload.vsdownload
+
+vsdownload.vsdownload.console_script([
+  "save", # sub command
+  "http://videoserver.com/playlist.m3u8", # input
+  "--no-cleanup" # extra options
+])
+```
 
 ## Documentations
 

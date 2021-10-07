@@ -44,5 +44,6 @@ setup(
     entry_points={
     "console_scripts": [
         'vsdownload=vsdownload.vsdownload:console_script',
+        'vsdownload-gui=vsdownload.vsdownload_gui_wrapper:console_script',
     ]}
 )        
