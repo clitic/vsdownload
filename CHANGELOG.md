@@ -1,5 +1,15 @@
 # CHANGELOG.md
 
+## 1.1.02 (10/10/2021)
+
+Features:
+
+- More support for scripting and automation
+
+Bug Fixes:
+
+- gui window close on clicking execute button in linux
+
 ## 1.1.0 (07/10/2021)
 
 Features:

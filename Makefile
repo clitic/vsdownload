@@ -16,13 +16,14 @@ requirements:
 	@pip install --upgrade pip
 	@pip install virtualenv
 	@pip install -r requirements.txt
+	@pip install PyQt6
 	@pip install typer-cli
 
 updates:
 	@pyuic6 vsdownload/vsdownload.ui -x -o vsdownload/vsdownload_ui.py
 
 docs:
-	@typer vsdownload/vsdownload.py utils docs --output CLI-API.md
+	@typer vsdownload/vsdownload.py utils docs --output docs/CLI-API.md
 
 venv:
 	@python -m venv env

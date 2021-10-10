@@ -12,9 +12,10 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = vsdownload_ui_main_window()
         self.ui.setupUi(self)
-
-        self.save_callargs = utils.get_command_callargs("save")
-        self.capture_callargs = utils.get_command_callargs("capture")
+        # connecting slots and signals
+        self.save_callargs = utils.get_command_callargs("call_save")
+        self.capture_callargs = utils.get_command_callargs("call_capture")
+        self.make_ui_updates()
         self.make_connections()
 
     @staticmethod
@@ -51,8 +52,10 @@ class MainWindow(QMainWindow):
             exec(f"self.ui.{ui_widget}.setValue({option.default})")
         elif "CheckBox" in ui_widget:
             exec(f"self.ui.{ui_widget}.setChecked({option.default})")
-
-    def make_connections(self):
+    
+    def make_ui_updates(self):
+        self.setWindowTitle(f"vsdownload v{utils.get_version()}")
+        self.ui.execute_command_text_browser.setPlaceholderText("updated command will be shown here")
         self.update_placeholders_tooltips(self.save_callargs["input"], "inputLineEdit")
         self.update_placeholders_tooltips(self.save_callargs["output"], "outputLineEdit_save")
         self.update_placeholders_tooltips(self.save_callargs["cleanup"], "cleanupCheckBox")
@@ -73,10 +76,13 @@ class MainWindow(QMainWindow):
         self.update_placeholders_tooltips(self.capture_callargs["scan_ext"], "scan_extLineEdit")
         self.update_placeholders_tooltips(self.capture_callargs["baseurl"], "baseurlCheckBox_capture")
 
+    def make_connections(self):
+        # connecting menu bar items
         self.ui.action_report_a_bug.triggered.connect(lambda: webbrowser.open("https://github.com/360modder/vsdownload/issues", new=2))
         self.ui.action_about_vsdownload.triggered.connect(lambda: self.about_vsdownload())
         self.ui.action_about_qt.triggered.connect(lambda: QApplication.aboutQt())
-        self.ui.execute_btn.clicked.connect(self.popen_vsdownload)
+        # connecting buttons
+        self.ui.execute_btn.clicked.connect(self.launch_vsdownload)
         self.ui.save_page_input_btn.clicked.connect(
             lambda: self.ui.inputLineEdit.setText(QFileDialog.getOpenFileName(filter="Files (*.m3u8, *.json)")[0])
         )
@@ -98,7 +104,7 @@ class MainWindow(QMainWindow):
         self.ui.capture_page_output_btn.clicked.connect(
             lambda: self.ui.outputLineEdit_capture.setText(QFileDialog.getSaveFileName(filter="Files (*.json)")[0])
         )
-
+        # connecting widget update and change states
         self.ui.inputLineEdit.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.outputLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.cleanupCheckBox.stateChanged.connect(self.update_execute_command)
@@ -204,7 +210,7 @@ class MainWindow(QMainWindow):
 
         self.ui.execute_command_text_browser.setText(" ".join(args))
     
-    def popen_vsdownload(self):
+    def launch_vsdownload(self):
         execute = False
         sub_command = self.ui.base_tab_widget.tabText(self.ui.base_tab_widget.currentIndex())
 
@@ -232,9 +238,18 @@ class MainWindow(QMainWindow):
                 execute = True
 
         if execute:
-            subprocess.run(self.ui.execute_command_text_browser.toPlainText(), creationflags=subprocess.CREATE_NEW_CONSOLE)
+            QApplication.clipboard().setText(self.ui.execute_command_text_browser.toPlainText())
+            if sys.platform.lower().startswith("win"):
+                subprocess.run(self.ui.execute_command_text_browser.toPlainText(), creationflags=subprocess.CREATE_NEW_CONSOLE)
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("vsdownload")
+                msg.setIcon(QMessageBox.Icon.Information)
+                msg.setText("copied to clipboard")
+                msg.setInformativeText("cannot execute a subprocess on non windows platform")
+                msg.exec()
 
-        
+
 def console_script():
     app = QApplication(sys.argv)
     window = MainWindow()

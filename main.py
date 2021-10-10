@@ -17,6 +17,6 @@ encrypted playlist:
 python main.py save https://vod8.wenshibaowenbei.com/20210628/g4yNLlI7/index.m3u8
 """
 
-import vsdownload.vsdownload
+from vsdownload.vsdownload import app
 
-vsdownload.vsdownload.console_script()
+app()

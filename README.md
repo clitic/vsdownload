@@ -1,6 +1,6 @@
 # VS Download - Video Stream Download
 
-command line (gui wrapped) program to download hls video streams from websites, m3u8 files and urls.
+command line program to download hls video streams from websites, m3u8 files and urls.
 
 <p align="center">
   a compact lightweight m3u8 downloader
@@ -22,11 +22,7 @@ command line (gui wrapped) program to download hls video streams from websites, 
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/vsdownload.gif">
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_1.jpg" height=550px>
-  &nbsp;&nbsp;&nbsp;
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_2.jpg" height=550px>
 </p>
-
 
 ## Features Implemented
 
@@ -68,7 +64,7 @@ Or install from github repository.
 pip install https://github.com/360modder/vsdownload/archive/master.zip
 ```
 
-Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.1.0/vsdownload.exe) / [gui wrapper](https://github.com/360modder/vsdownload/releases/download/v1.1.0/vsdownload_gui.zip) from [releases](https://github.com/360modder/vsdownload/releases).
+Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.1.02/vsdownload.exe) / [gui wrapper](https://github.com/360modder/vsdownload/releases/download/v1.1.02/vsdownload_gui.zip) from [releases](https://github.com/360modder/vsdownload/releases).
 
 ## Usage
 
@@ -85,7 +81,21 @@ vsdownload save log.json
 vsdownload save <m3u8 url or file> -o video.ts
 ```
 
+> In **-o/--output** flag, any ffmpeg supported extension could be provided
+
 > Add **--no-cleanup** flag to use resume capabilities
+
+## Documentation
+
+- [CLI-API.md](docs/CLI-API.md)
+- [FAQs.md](docs/FAQs.md)
+
+## GUI Wrapper
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_1.jpg">
+  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_2.jpg">
+</p>
 
 To use gui wrapper, first install PyQt6 and then run **vsdownload-gui**
 
@@ -94,91 +104,77 @@ $ pip install PyQt6
 $ vsdownload-gui
 ```
 
-## How to convert .ts to .mp4, .mkv etc. ?
-
-First download and install [ffmpeg](https://www.ffmpeg.org/download.html) and then in output flag specify your desired format.
-
-```bash
-vsdownload save <m3u8 url or file> -o video.mp4
-```
-
-If ffmpeg is not in system binary path then use **--ffmpeg-path** flag.
-
-
-```bash
-vsdownload save <m3u8 url or file> --ffmpeg-path <path to ffmpeg binary> -o video.mp4
-```
-
-## How to speed up downloading speed ?
-
-Downloading ts files with more multiple worker threads would be a good option and also using a higher chunk size will reduce the file i/o operations. vsdownload can handle those things by using some flags.
-
-Downloading m3u8 files with 16 threads with 4k chunk size.
-
-```bash
-vsdownload save <m3u8 url or file> --chunk-size 4096 -t 16 -o video.ts
-```
-
-## Downloaded hls stream size in bytes and corrupted ?
-
-This problem arises when vsdownload makes get request to ts file and it returns a bad response body which results in corrupted downloads.
-
-This error maybe caused by incorrect segment url which is auto parsed by vsdownload. You can manually override it by following the given steps. 
-
-Steps resolve this error:
-
-1. Check for m3u8 uri and other ts files uri/s from your browser's network logs or use **vsdownload capture** command. you will notice a comman url attached to very ts file uri, then note it down as **baseurl**.
-
-```
-Example:
-
-1. http://videoserver.com/playlist.m3u8
-2. http://videoserver.com/stream_0.ts
-3. http://videoserver.com/stream_1.ts
-4. http://videoserver.com/stream_2.ts
-
-Baseurl (comman url / base endpoint): http://videoserver.com/
-```
-
-2. After getting a baseurl try to download stream by using this command.
-
-```bash
-vsdownload save <m3u8 url or file> -b <baseurl> -o video.ts
-```
-
-```bash
-Example:
-
-vsdownload save http://videoserver.com/playlist.m3u8 -b http://videoserver.com/ -o video.ts
-```
-
-3. If stream doesn't download till now then you can check few options given below.
-
-Some extra things to try for websites which don't make their hls streams publicly open.
-
-1. Maintain a connection to server by playing stream in browser or from any other means.
-2. Check for maximum supported parallel connections from server. If it can use more than 1 connection, then streams maybe downloaded by following the above steps.
-3. Use **--proxy-address** flag.
-
 ## Scripting And Automation
 
-```python
-import vsdownload.vsdownload
+You can also integrate vsdownload save and capture command in any python program. This is useful when you have to automate or create sub website m3u8 downloaders. First you can find or parse the m3u8 uri from a website then call *vsdownload.save()* in order to download it.
 
-vsdownload.vsdownload.console_script([
-  "save", # sub command
-  "http://videoserver.com/playlist.m3u8", # input
-  "--no-cleanup" # extra options
-])
+- save command api
+
+```python
+from vsdownload import vsdownload
+
+vsdownload.save("http://videoserver.com/playlist.m3u8", output="merged.mp4")
 ```
 
-## Documentations
+- capture and save api
 
-- [CLI-API.md](CLI-API.md)
-- [CHANGELOG.md](CHANGELOG.md)
+```python
+from vsdownload import vsdownload
+
+log_file = "stream_log.json"
+
+vsdownload.capture("http://streamingsite.com/stream.html", output=log_file, driver="chromedriver.exe")
+vsdownload.save(log_file, output="merged.mp4")
+```
+
+- calling from cli args
+
+<details>
+  <summary>using subprocess</summary>
+
+```python
+import subprocess
+
+command_args = [
+  "vsdownload", # command
+  "save", # sub command
+  "http://videoserver.com/playlist.m3u8", # input
+  "-o", # extra options
+  "a.mp4" # output file
+]
+
+try:
+  subprocess.run(command_args, check=True)
+except subprocess.CalledProcessError as e:
+  print(f"error code: {e.returncode}")
+```
+
+</details>
+
+<details>
+  <summary>using typer</summary>
+
+```python
+import threading # using threads to avoid sys.exit()
+from vsdownload.vsdownload import app
+
+command_args = [
+  "save", # sub command
+  "http://videoserver.com/playlist.m3u8", # input
+  "-o", # extra options
+  "a.mp4" # output file
+]
+
+c_thread = threading.Thread(target=lambda: app(command_args))
+c_thread.start()
+c_thread.join()
+```
+
+</details>
 
 ## Development
 
+- [CHANGELOG.md](CHANGELOG.md)
 - Makefile
 
 ```bash

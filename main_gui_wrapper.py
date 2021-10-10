@@ -1,3 +1,3 @@
-import vsdownload.vsdownload_gui_wrapper
+from vsdownload import vsdownload_gui_wrapper
 
-vsdownload.vsdownload_gui_wrapper.console_script()
+vsdownload_gui_wrapper.console_script()
