@@ -67,7 +67,7 @@ def save(
     if locals()["input"] is ...:
         raise NotImplementedError("cannot proceed without input")
 
-    command_save(Namespace(**locals()))
+    command_save(Namespace(**locals()), check=True)
 
 
 if __name__ == "__main__":

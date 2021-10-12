@@ -17,8 +17,9 @@ from . import utils
 
 class ProcessM3U8:
 
-    def __init__(self, args):
+    def __init__(self, args, check=False):
         self.args = args
+        self.check = check
         self.merged_file_size = 0
         self.has_seperate_audio = False
         self.has_subtitle = False
@@ -50,11 +51,6 @@ class ProcessM3U8:
             print(f"proxies are updated to: {self.download_session.proxies}")
 
     @staticmethod
-    def runtime_error(msg="no message specified", code=1):
-        print(f"error: {msg}")
-        sys.exit(code)
-
-    @staticmethod
     def find_absolute_uri(baseurl, m3u8_data):
         if baseurl is None:
             return m3u8_data.absolute_uri
@@ -65,6 +61,13 @@ class ProcessM3U8:
     def decrypt_aes_data(cipher_data, key, iv):
         cipher_data = pad(data_to_pad=cipher_data, block_size=AES.block_size)
         return AES.new(key=key, mode=AES.MODE_CBC, IV=iv).decrypt(cipher_data)
+
+    def _runtime_error(self, msg="no message specified", code=1):
+        print(f"error: {msg}")
+        if not self.check:
+            sys.exit(code)
+        else:
+            raise RuntimeError(msg)
 
     def _find_key(self, baseurl, segment):
         if self.args.key_iv is not None:
@@ -90,9 +93,9 @@ class ProcessM3U8:
 
     def _check_ffmpeg_path(self):
         if self.args.ffmpeg_path == "ffmpeg" and shutil.which(self.args.ffmpeg_path) is None:
-            self.runtime_error("ffmpeg is not installed, visit https://ffmpeg.org/download.html")
+            self._runtime_error("ffmpeg is not installed, visit https://ffmpeg.org/download.html")
         elif self.args.ffmpeg_path != "ffmpeg" and not os.path.isfile(self.args.ffmpeg_path):
-            self.runtime_error("ffmpeg is not installed, visit https://ffmpeg.org/download.html")
+            self._runtime_error("ffmpeg is not installed, visit https://ffmpeg.org/download.html")
 
     def parse_link_file(self):
         return self.args.input, self.args.baseurl
@@ -178,7 +181,7 @@ class ProcessM3U8:
 
         except Exception as e:
             print(e.__str__())
-            self.runtime_error("failed to fetch m3u8 content")
+            self._runtime_error("failed to fetch m3u8 content")
 
     # this function uses binary merge method for merging ts files
     def _ts_merge_task(self, total_ts_files):
@@ -195,7 +198,7 @@ class ProcessM3U8:
                     with open(f"{self.args.tempdir}/{i}.ts", "rb") as f2:
                         f.write(f2.read())
                 except FileNotFoundError:
-                    self.runtime_error(f"{i}.ts file is missing")
+                    self._runtime_error(f"{i}.ts file is missing")
                 
     def _ffmpeg_covert_task(self):
         print()
@@ -224,7 +227,7 @@ class ProcessM3U8:
         except Exception as e:
             print(e.__str__())
             print(f"info: temporary merged ts file is saved at {self.merged_tsfile_path}")
-            self.runtime_error("ts conversion failed")
+            self._runtime_error("ts conversion failed")
 
     def _clean_up_task(self):
         print()
@@ -247,7 +250,7 @@ class ProcessM3U8:
 
         except Exception as e:
             print(e.__str__())
-            self.runtime_error("clean up task failed")
+            self._runtime_error("clean up task failed")
 
     def _download_segment_in_thread(self, segment_dict):
         filename = f"{self.args.tempdir}/{segment_dict['index']}.ts"
@@ -353,8 +356,8 @@ class ProcessM3U8:
         if self.args.cleanup:
             self._clean_up_task()	
 
-def command_save(args):
-    m3u8_downloader = ProcessM3U8(args)
+def command_save(args, check=False):
+    m3u8_downloader = ProcessM3U8(args, check=check)
     
     if args.input.endswith(".json"):
         parsed_links = m3u8_downloader.parse_log_json()	
