@@ -150,18 +150,22 @@ class ProcessM3U8:
                 print("info: retargeting to download seperate audio stream")
                 self.has_seperate_audio = True
                 self._check_ffmpeg_path()
-                args_dict["input"] = self.find_absolute_uri(baseurl, media_stream)
-                args_dict["output"] = "merged_audio.ts"
-                args_dict["tempdir"] = args_dict["tempdir"] + "_audio"
-                command_save(Namespace(**args_dict))
+                args_dict.update({
+                    "input": self.find_absolute_uri(baseurl, media_stream),
+                    "output": "merged_audio.ts",
+                    "tempdir": args_dict["tempdir"] + "_audio",
+                })
+                command_save(Namespace(**args_dict), check=self.check)
 
             elif media_stream.autoselect == "YES" and media_stream.type == "SUBTITLES":
                 print("info: retargeting to download subtitle stream")
                 self.has_subtitle = True
-                args_dict["input"] = self.find_absolute_uri(baseurl, media_stream)
-                args_dict["output"] = "merged_subtitle.srt"
-                args_dict["tempdir"] = args_dict["tempdir"] + "_subtitle"
-                command_save(Namespace(**args_dict))
+                args_dict.update({
+                    "input": self.find_absolute_uri(baseurl, media_stream),
+                    "output": "merged_subtitle.srt",
+                    "tempdir": args_dict["tempdir"] + "_subtitle",
+                })
+                command_save(Namespace(**args_dict), check=self.check)
 
     def parse_m3u8(self, parsed_links):
         target_url, baseurl = parsed_links

@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 1.1.02 (unreleased)
+
+Fixes:
+
+- Raises RuntimeError on calling *vsdownload.save()*
+
 ## 1.1.02 (10/10/2021)
 
 Features:

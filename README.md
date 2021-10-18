@@ -39,8 +39,9 @@ command line program to download hls video streams from websites, m3u8 files and
 - [x] realtime file size prediction (arithmetic mean) and download speed
 - [x] resume support
 - [x] retry on error
+- [ ] supports live stream download
 
-> Create an issuse to request a new feature
+> Create an issue to request a new feature
 
 ## Important Declaration
 
@@ -50,7 +51,7 @@ If you are distributing downloaded video streams, first ensure that you have rig
 
 Requires*
 
-- [python3.6+](https://www.python.org/) and [pip](https://pip.pypa.io/en/stable/installing/)
+- [python3.6+](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/)
 - [chrome](https://www.google.com/chrome/) and [chrome web driver](https://chromedriver.chromium.org/downloads) (as per use cases)
 - [ffmpeg](https://www.ffmpeg.org/download.html) (as per use cases)
 
@@ -81,11 +82,9 @@ vsdownload save log.json
 vsdownload save <m3u8 url or file> -o video.ts
 ```
 
-> In **-o/--output** flag, any ffmpeg supported extension could be provided
+> In **-o/--output** flag, any ffmpeg supported extension could be provided <br> Add **--no-cleanup** flag to use resume capabilities
 
-> Add **--no-cleanup** flag to use resume capabilities
-
-## Documentation
+Some links:
 
 - [CLI-API.md](docs/CLI-API.md)
 - [FAQs.md](docs/FAQs.md)
@@ -108,7 +107,7 @@ $ vsdownload-gui
 
 You can also integrate vsdownload save and capture command in any python program. This is useful when you have to automate or create sub website m3u8 downloaders. First you can find or parse the m3u8 uri from a website then call *vsdownload.save()* in order to download it.
 
-- save command api
+- save function
 
 ```python
 from vsdownload import vsdownload
@@ -116,7 +115,7 @@ from vsdownload import vsdownload
 vsdownload.save("http://videoserver.com/playlist.m3u8", output="merged.mp4")
 ```
 
-- capture and save api
+- capture and save functions
 
 ```python
 from vsdownload import vsdownload
@@ -127,10 +126,7 @@ vsdownload.capture("http://streamingsite.com/stream.html", output=log_file, driv
 vsdownload.save(log_file, output="merged.mp4")
 ```
 
-- calling from cli args
-
-<details>
-  <summary>using subprocess</summary>
+- calling from subprocess
 
 ```python
 import subprocess
@@ -148,29 +144,6 @@ try:
 except subprocess.CalledProcessError as e:
   print(f"error code: {e.returncode}")
 ```
-
-</details>
-
-<details>
-  <summary>using typer</summary>
-
-```python
-import threading # using threads to avoid sys.exit()
-from vsdownload.vsdownload import app
-
-command_args = [
-  "save", # sub command
-  "http://videoserver.com/playlist.m3u8", # input
-  "-o", # extra options
-  "a.mp4" # output file
-]
-
-c_thread = threading.Thread(target=lambda: app(command_args))
-c_thread.start()
-c_thread.join()
-```
-
-</details>
 
 ## Development
 
