@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 import subprocess
 import webbrowser
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         self.update_placeholders_tooltips(self.save_callargs["output"], "outputLineEdit_save")
         self.update_placeholders_tooltips(self.save_callargs["cleanup"], "cleanupCheckBox")
         self.update_placeholders_tooltips(self.save_callargs["baseurl"], "baseurlLineEdit_save")
+        self.update_placeholders_tooltips(self.save_callargs["verbose"], "verboseCheckBox")
         self.update_placeholders_tooltips(self.save_callargs["threads"], "threadsSpinBox")
         self.update_placeholders_tooltips(self.save_callargs["chunk_size"], "chunk_sizeSpinBox")
         self.update_placeholders_tooltips(self.save_callargs["headers"], "headersLineEdit")
@@ -109,6 +110,7 @@ class MainWindow(QMainWindow):
         self.ui.outputLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.cleanupCheckBox.stateChanged.connect(self.update_execute_command)
         self.ui.baseurlLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
+        self.ui.verboseCheckBox.stateChanged.connect(self.update_execute_command)
         self.ui.threadsSpinBox.valueChanged.connect(self.update_execute_command)
         self.ui.chunk_sizeSpinBox.valueChanged.connect(self.update_execute_command)
         self.ui.headersLineEdit.cursorPositionChanged.connect(self.update_execute_command)
@@ -145,9 +147,8 @@ class MainWindow(QMainWindow):
                 args.append("-b")
                 args.append(f"\"{self.ui.baseurlLineEdit_save.text()}\"")
 
-            if self.ui.baseurlLineEdit_save.text() != "":
-                args.append("-b")
-                args.append(f"\"{self.ui.baseurlLineEdit_save.text()}\"")
+            if self.ui.verboseCheckBox.isChecked():
+                args.append("-v")
 
             if self.ui.threadsSpinBox.value() != self.save_callargs["threads"].default:
                 args.append("-t")

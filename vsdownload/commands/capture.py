@@ -8,7 +8,7 @@ from . import utils
 def command_capture(args):
     print("note: if streams are playing but window doesn't closed automatically, then re-run the command")
     print("troubleshoot with flag: --scan-ext m3u8")
-    
+
     capabilities = DesiredCapabilities.CHROME
     capabilities["goog:loggingPrefs"] = {"performance": "ALL"}
     driver = webdriver.Chrome(executable_path=args.driver, desired_capabilities=capabilities)
@@ -23,8 +23,10 @@ def command_capture(args):
             break
 
     m3u8_links = utils.find_urls_by_ext(f"{logs}", "m3u8")
-    json_data = {"m3u8_urls": m3u8_links}
-    json_data["baseurl"] = utils.find_baseurl_by_urls(m3u8_links, "m3u8") if args.baseurl else None
+    json_data = {
+        'baseurl': utils.find_baseurl_by_urls(m3u8_links, "m3u8") if args.baseurl else None,
+        'm3u8_urls': m3u8_links,
+    }
 
     pprint(json_data)
 

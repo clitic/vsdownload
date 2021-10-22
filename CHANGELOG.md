@@ -1,6 +1,11 @@
 # CHANGELOG.md
 
-## 1.1.02 (unreleased)
+## 1.1.05 (unreleased)
+
+Features:
+
+- Verbose downloading output
+- Optimized downloads
 
 Fixes:
 
