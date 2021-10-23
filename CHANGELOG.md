@@ -1,15 +1,17 @@
 # CHANGELOG.md
 
-## 1.1.05 (unreleased)
+## 1.1.06 (unreleased)
 
 Features:
 
+- Colorful console outputs
 - Verbose downloading output
 - Optimized downloads
-
-Fixes:
-
 - Raises RuntimeError on calling *vsdownload.save()*
+
+Bug Fixes:
+
+- Timeout for ffmpeg convert task
 
 ## 1.1.02 (10/10/2021)
 

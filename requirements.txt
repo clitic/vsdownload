@@ -2,5 +2,6 @@ typer
 requests
 m3u8
 tqdm
+rich
 selenium
 pycryptodome

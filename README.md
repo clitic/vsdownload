@@ -84,8 +84,6 @@ vsdownload save <m3u8 url or file> -o video.ts
 
 > In **-o/--output** flag, any ffmpeg supported extension could be provided <br> Add **--no-cleanup** flag to use resume capabilities
 
-Some links:
-
 - [CLI-API.md](docs/CLI-API.md)
 - [FAQs.md](docs/FAQs.md)
 

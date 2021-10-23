@@ -10,12 +10,23 @@ import m3u8
 from argparse import Namespace
 from concurrent.futures import ThreadPoolExecutor
 from typing import NoReturn, Tuple, Optional, Union
+from rich.console import Console
 from . import utils
 
 
+console = Console()
+
+
 class ProcessM3U8:
+    """class for processing m3u8 data from segments parsing to downloading it"""
 
     def __init__(self, args: Namespace, check: Optional[bool] = False) -> None:
+        """constructor for ProcessM2U8 class
+
+        Args:
+            args (Namespace): supplied arguments in argsparse.Namespace object
+            check (Optional[bool], optional): raises RuntimeError instead of sys.exit(1). Defaults to False.
+        """
         self.args = args
         self.check = check
         self.merged_file_size = 0
@@ -39,7 +50,7 @@ class ProcessM3U8:
                 self.headers = json.load(f)
 
             self.download_session.headers.update(self.headers)
-            print(f"headers are updated to: {self.download_session.headers}")
+            console.print(f"headers are updated to: {self.download_session.headers}")
         # updating proxies
         if args.proxy_address is not None:
             proxies = {
@@ -48,22 +59,31 @@ class ProcessM3U8:
 
             self.http_client = m3u8.DefaultHTTPClient(proxies)
             self.download_session.proxies.update(proxies)
-            print(f"proxies are updated to: {self.download_session.proxies}")
+            console.print(f"proxies are updated to: {self.download_session.proxies}")
 
     def parse_link_file(self) -> Tuple[str, str]:
+        """parse out target m3u8 uri or file + baseurl
+
+        Returns:
+            Tuple[str, str]: tuple with format (target m3u8 uri or file, baseurl)
+        """
         return self.args.input, self.args.baseurl
 
     def parse_log_json(self) -> Tuple[str, str]:
+        """parse out target m3u8 uri + baseurl from log.json file
+
+        Returns:
+            Tuple[str, str]: tuple with format (target m3u8 uri, baseurl)
+        """
         with open(self.args.input) as f:
             json_data = json.load(f)
 
         if self.args.pre_select is None:
-            print(f"m3u8 urls listed inside {self.args.input}:")
+            console.print(f"m3u8 urls listed inside {self.args.input}:")
             for i, m3u8_url in enumerate(json_data["m3u8_urls"]):
-                print(f"{i+1}) {m3u8_url}")
+                console.print(f"{i+1}) {m3u8_url}")
             
-            print()
-            target_url = int(input("choose a m3u8 url (1, 2, etc.): "))
+            target_url = int(input("\nchoose a m3u8 url (1, 2, etc.): "))
             print()
             target_url = json_data["m3u8_urls"][target_url - 1]
         
@@ -78,8 +98,19 @@ class ProcessM3U8:
         return target_url, baseurl
 
     def parse_m3u8(self, parsed_links: Tuple[str, str]) -> m3u8.SegmentList:
+        """parse m3u8 segments from parsed links
+
+        Args:
+            parsed_links (Tuple[str, str]): [description]
+
+        Returns:
+            m3u8.SegmentList: segments object
+        
+        Note:
+            for seperate audio and subtitle stream this method internally call another instance of base class and downloads it
+        """
         target_url, baseurl = parsed_links
-        print(f"fetching m3u8 content: {target_url}")
+        console.print(f"fetching m3u8 content: {target_url}")
 
         try:
             m3u8_file = m3u8.load(target_url, headers=self.headers, http_client=self.http_client)
@@ -94,23 +125,22 @@ class ProcessM3U8:
             return segments
 
         except Exception as e:
-            print(e.__str__())
+            self.print_exception(e)
             self._runtime_error("failed to fetch m3u8 content")
             
     def _segments_from_variant_playlists(self, m3u8_file: m3u8.M3U8, baseurl: str) -> None:
-        print("m3u8 playlists listed inside m3u8 file:")
+        console.print("m3u8 playlists listed inside m3u8 file:")
 
         for i, m3u8_playlists in enumerate(m3u8_file.data["playlists"]):
-            print(f"-------------------- {i + 1} --------------------")
+            console.print(f"-------------------- {i + 1} --------------------")
             for spec, val in m3u8_playlists["stream_info"].items():
-                print(f"{spec}: {val}")
+                console.print(f"{spec}: {val}")
 
-        print()
-        selected_playlist = int(input("choose a m3u8 playlist (1, 2, etc.): "))
+        selected_playlist = int(input("\nchoose a m3u8 playlist (1, 2, etc.): "))
         print()
         m3u8_playlist_file = m3u8_file.playlists[selected_playlist - 1]
         playlist_absolute_uri = utils.find_absolute_uri(baseurl, m3u8_playlist_file)
-        print(f"fetching segments from m3u8 playlist: {playlist_absolute_uri}")
+        console.print(f"fetching segments from m3u8 playlist: {playlist_absolute_uri}")
         return m3u8.load(playlist_absolute_uri, headers=self.headers, http_client=self.http_client).segments
 
     def _segments_of_media_playlists(self, m3u8_file: m3u8.M3U8, baseurl: str) -> None:
@@ -118,7 +148,7 @@ class ProcessM3U8:
             args_dict = {key: value for key, value in self.args._get_kwargs()}
 
             if media_stream.type == "AUDIO" and media_stream.autoselect == "YES":
-                print("info: retargeting to download seperate audio stream")
+                console.print("[blue bold]Info:[/blue bold] retargeting to download seperate audio stream")
                 self.has_seperate_audio = True
                 self._check_ffmpeg_path()
                 args_dict.update({
@@ -129,7 +159,7 @@ class ProcessM3U8:
                 command_save(Namespace(**args_dict), check=self.check)
 
             elif media_stream.type == "SUBTITLES" and media_stream.autoselect == "YES":
-                print("info: retargeting to download subtitle stream")
+                console.print("[blue bold]Info:[/blue bold] retargeting to download subtitle stream")
                 self.has_subtitle = True
                 args_dict.update({
                     "input": utils.find_absolute_uri(baseurl, media_stream),
@@ -139,6 +169,12 @@ class ProcessM3U8:
                 command_save(Namespace(**args_dict), check=self.check)
 
     def download_in_mutiple_thread(self, segments: m3u8.SegmentList, parsed_links: Tuple[str, str]) -> None:
+        """download segments from m3u8.SegmentList object 
+
+        Args:
+            segments (m3u8.SegmentList): segments object
+            parsed_links (Tuple[str, str]): parsed links
+        """
         if os.path.exists(self.args.tempdir) and self.args.cleanup:
             shutil.rmtree(self.args.tempdir)
             os.mkdir(self.args.tempdir)
@@ -222,10 +258,11 @@ class ProcessM3U8:
                 # update retrycount on each failed call
                 segment_dict.update({"retrycount": segment_dict["retrycount"] + 1})
                 _save_json_file(info_filename, segment_dict)
-                print(f"info: segment {segment_dict['index']} added to retry queue {segment_dict['retrycount']}")
+                console.print(f"[blue bold]Info:[/blue bold] segment {segment_dict['index']} added to retry queue {segment_dict['retrycount']}")
             else:
-                print("\nerror: download failed, re-run the command with --no-cleanup flag to resume download\n")
-                print(e.__str__())
+                print()
+                self.print_exception(e)
+                console.print("[red bold]VsdownloadError:[/red bold] download failed, re-run the command with [b]--no-cleanup[/b] flag to resume download\n")
                 os._exit(1)
                 
     def _downloading_core(self, segment_dict: dict) -> None:
@@ -259,8 +296,9 @@ class ProcessM3U8:
                 try:
                     f.write(utils.decrypt_aes_data(encrypted_ts_data, eval(segment_dict["key"]), segment_dict["iv"]))
                 except Exception as e:
-                    print(f"\nerror: {filename} decryption failed\n")
-                    print(e.__str__())
+                    print()
+                    self.print_exception(e)
+                    console.print(f"[red bold]VsdownloadError:[/red bold] {filename} decryption failed\n")
                     os._exit(1)
 
         # for non encrypted ts
@@ -285,11 +323,8 @@ class ProcessM3U8:
 
     # this function uses binary merge method for merging ts files
     def _ts_merge_task(self, total_ts_files: int) -> None:
-        print()
-        print("ts file merge task")
-        print(f"starting in {self.args.timeout} seconds...")
+        console.log(f"\n[yellow]ts file merge task[/yellow] ==> starting in {self.args.timeout} seconds ...\n")
         time.sleep(self.args.timeout)
-        print()
 
         filename = self.merged_tsfile_path if not self.has_seperate_audio else "merged_video.ts"
         with open(filename, "wb") as f:
@@ -301,10 +336,9 @@ class ProcessM3U8:
                     self._runtime_error(f"{i}.ts file is missing")
                 
     def _ffmpeg_covert_task(self) -> None:
-        print()
-        print("running ffmpeg convert task")
-        print(f"starting in {self.args.timeout} seconds...")
-
+        console.log(f"\n[yellow]ffmpeg convert task[/yellow] ==> starting in {self.args.timeout} seconds ...")
+        time.sleep(self.args.timeout)
+        
         ffmpeg_command = [
             self.args.ffmpeg_path, "-i",
             self.merged_tsfile_path if not self.has_seperate_audio else "merged_video.ts"
@@ -320,19 +354,17 @@ class ProcessM3U8:
             ffmpeg_command.extend(["-c", "copy"])
             
         ffmpeg_command.append(self.args.output)
-        print(f"executing command: {' '.join(ffmpeg_command)}")
+        console.print(f"executing command: {' '.join(ffmpeg_command)}")
 
         try:
             subprocess.run(ffmpeg_command)
         except Exception as e:
-            print(e.__str__())
-            print(f"info: temporary merged ts file is saved at {self.merged_tsfile_path}")
+            self.print_exception(e)
+            console.print(f"[blue bold]Info:[/blue bold] temporary merged ts file is saved at {self.merged_tsfile_path}")
             self._runtime_error("ts conversion failed")
 
     def _clean_up_task(self) -> None:
-        print()
-        print("clean up task")
-        print(f"starting in {self.args.timeout} seconds...")
+        console.log(f"\n[yellow]clean up task[/yellow] ==> starting in {self.args.timeout} seconds ...")
         time.sleep(self.args.timeout)
 
         try:
@@ -349,11 +381,11 @@ class ProcessM3U8:
                 os.remove("merged_subtitle.srt")
 
         except Exception as e:
-            print(e.__str__())
+            self.print_exception(e)
             self._runtime_error("clean up task failed")
-
+        
     def _runtime_error(self, msg: Optional[str] = "no message specified", code: Optional[int] = 1) -> NoReturn:
-        print(f"error: {msg}")
+        console.print(f"[red bold]VsdownloadError:[/red bold] {msg}")
         if not self.check:
             sys.exit(code)
         else:
@@ -365,7 +397,11 @@ class ProcessM3U8:
         elif self.args.ffmpeg_path != "ffmpeg" and not os.path.isfile(self.args.ffmpeg_path):
             self._runtime_error("ffmpeg is not installed, visit https://ffmpeg.org/download.html")
             
-                        
+    @staticmethod
+    def print_exception(e: Exception) -> None:
+        console.print(f"[red bold]{e.__class__.__name__}:[/red bold] {e.__str__()}")
+                                
+                                
 def command_save(args: Namespace, check: Optional[bool] = False):
     m3u8_downloader = ProcessM3U8(args, check=check)
     
@@ -375,7 +411,7 @@ def command_save(args: Namespace, check: Optional[bool] = False):
         parsed_links = m3u8_downloader.parse_log_json()	
 
     segments = m3u8_downloader.parse_m3u8(parsed_links)
-    print(f"file will be saved at: {args.output}")
-    print(f"starting download in {args.threads} thread/s\n")
-    m3u8_downloader.download_in_mutiple_thread(segments, parsed_links)	
-    print(f"\nfile downloaded successfully at: {args.output}")
+    console.print(f"file will be saved at: {args.output}")
+    console.print(f"starting download in {args.threads} thread/s\n")
+    m3u8_downloader.download_in_mutiple_thread(segments, parsed_links)
+    console.print(f"\nfile downloaded successfully at: [green]{args.output}[/green]")
