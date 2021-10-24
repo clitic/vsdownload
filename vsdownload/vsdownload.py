@@ -1,10 +1,11 @@
 import typer
 from argparse import Namespace
+from typing import Optional
 from .commands.capture import command_capture
 from .commands.save import command_save
 
 
-__version__ = "1.1.06"
+__version__ = "1.1.08"
 app = typer.Typer(name="vsdownload", help="command line program to download hls video streams from websites, m3u8 files and urls")
 
 
@@ -14,7 +15,7 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 @app.callback()
-def main(version: bool = typer.Option(None, "--version", "-v", callback=version_callback, help="show current version of vsdownload")):
+def main(version: Optional[bool] = typer.Option(None, "--version", callback=version_callback, help="show current version of vsdownload")):
     pass
 
 @app.command(name="capture", help="capture m3u8 urls from a website")
@@ -32,8 +33,8 @@ def call_save(
         input: str = typer.Argument(..., help="url|.m3u8|log.json"),
         output: str = typer.Option("merged.ts", "--output", "-o", help="path for output of downloaded video stream file", metavar="merged.ts/merged.mp4/merged.mkv"),
         cleanup: bool = typer.Option(True, help="delete temporary downloaded segments, add --no-cleanup flag to use resume capabilities"),
+        verbose: bool = typer.Option(False, "--verbose", "-v", help="verbose downloading outputs and logs"),
         baseurl: str = typer.Option(None, "--baseurl", "-b", help="base url for all segments, usally needed for local m3u8 file", metavar="http://videoserver.com/", show_default=False),
-        verbose: bool = typer.Option(False, "--verbose", "-v", help="verbose downloading output and logs"),
         threads: int = typer.Option(5, "--threads", "-t", help="max thread count for parallel threads to download segments", metavar="1-32", min=1, max=32),
         chunk_size: int = typer.Option(1024, help="chunk size for downloading ts files (in kilobytes)"),
         headers: str = typer.Option(None, help="path of header defining json file which will update headers", metavar="headers.json", show_default=False),
@@ -48,26 +49,17 @@ def call_save(
     command_save(Namespace(**locals()))
         
 def capture(
-        url: str = ..., output: str = "log.json", driver: str = None, scan_ext: str = "ts", baseurl: bool = False
+        url: str, driver: str, output: str = "log.json", scan_ext: str = "ts", baseurl: bool = False
     ):
-
-    if url is ...:
-        raise NotImplementedError("cannot proceed without website url")
-    
-    if driver is None:
-        raise NotImplementedError("cannot proceed without chromedriver path")
 
     command_capture(Namespace(**locals()))
 
 def save(
-        input: str = ..., output: str = "merged.ts", cleanup: bool = True, baseurl: str = None, verbose: bool = False,
-        threads: int = 5, chunk_size: int = 1024, headers: str = None, key_iv: str = None, proxy_address: str = None,
-        ffmpeg_path: str = "ffmpeg", tempdir: str = "temptsfiles", retry_count: int = 10, timeout: int = 5,
-        pre_select: int = None
+        input: str, output: str = "merged.ts", cleanup: bool = True, verbose: bool = False, baseurl: str = None,
+        threads: int = 5, chunk_size: int = 1024, headers: str = None, key_iv: str = None,
+        proxy_address: str = None, ffmpeg_path: str = "ffmpeg", tempdir: str = "temptsfiles",
+        retry_count: int = 10, timeout: int = 5, pre_select: int = None
     ):
-
-    if locals()["input"] is ...:
-        raise NotImplementedError("cannot proceed without input")
 
     command_save(Namespace(**locals()), check=True)
 

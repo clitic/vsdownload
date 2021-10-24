@@ -8,7 +8,8 @@ from . import utils
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    
+    def __init__(self) -> None:
         super(MainWindow, self).__init__()
         self.ui = vsdownload_ui_main_window()
         self.ui.setupUi(self)
@@ -18,26 +19,7 @@ class MainWindow(QMainWindow):
         self.make_ui_updates()
         self.make_connections()
 
-    @staticmethod
-    def argument_error(title, message):
-        msg = QMessageBox()
-        msg.setWindowTitle("argument error")
-        msg.setIcon(QMessageBox.Icon.Critical)
-        msg.setText(title)
-        msg.setInformativeText(message)
-        msg.exec()
-
-    @staticmethod
-    def about_vsdownload():
-        msg = QMessageBox()
-        msg.setWindowTitle("about vsdownload")
-        msg.setIcon(QMessageBox.Icon.Information)
-        msg.setText(f"vsdownload v{utils.get_version()}")
-        msg.setInformativeText("developed by 360modder")
-        msg.setDetailedText("build with python & pyqt6")
-        msg.exec()
-
-    def update_placeholders_tooltips(self, option, ui_widget):
+    def update_placeholders_tooltips(self, option, ui_widget) -> None:
         exec(f"self.ui.{ui_widget}.setToolTip('{option.help}')")
 
         if "LineEdit" in ui_widget:
@@ -53,14 +35,14 @@ class MainWindow(QMainWindow):
         elif "CheckBox" in ui_widget:
             exec(f"self.ui.{ui_widget}.setChecked({option.default})")
     
-    def make_ui_updates(self):
+    def make_ui_updates(self) -> None:
         self.setWindowTitle(f"vsdownload v{utils.get_version()}")
         self.ui.execute_command_text_browser.setPlaceholderText("updated command will be shown here")
         self.update_placeholders_tooltips(self.save_callargs["input"], "inputLineEdit")
         self.update_placeholders_tooltips(self.save_callargs["output"], "outputLineEdit_save")
         self.update_placeholders_tooltips(self.save_callargs["cleanup"], "cleanupCheckBox")
-        self.update_placeholders_tooltips(self.save_callargs["baseurl"], "baseurlLineEdit_save")
         self.update_placeholders_tooltips(self.save_callargs["verbose"], "verboseCheckBox")
+        self.update_placeholders_tooltips(self.save_callargs["baseurl"], "baseurlLineEdit_save")
         self.update_placeholders_tooltips(self.save_callargs["threads"], "threadsSpinBox")
         self.update_placeholders_tooltips(self.save_callargs["chunk_size"], "chunk_sizeSpinBox")
         self.update_placeholders_tooltips(self.save_callargs["headers"], "headersLineEdit")
@@ -77,7 +59,7 @@ class MainWindow(QMainWindow):
         self.update_placeholders_tooltips(self.capture_callargs["scan_ext"], "scan_extLineEdit")
         self.update_placeholders_tooltips(self.capture_callargs["baseurl"], "baseurlCheckBox_capture")
 
-    def make_connections(self):
+    def make_connections(self) -> None:
         # connecting menu bar items
         self.ui.action_report_a_bug.triggered.connect(lambda: webbrowser.open("https://github.com/360modder/vsdownload/issues", new=2))
         self.ui.action_about_vsdownload.triggered.connect(lambda: self.about_vsdownload())
@@ -109,8 +91,8 @@ class MainWindow(QMainWindow):
         self.ui.inputLineEdit.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.outputLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.cleanupCheckBox.stateChanged.connect(self.update_execute_command)
-        self.ui.baseurlLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.verboseCheckBox.stateChanged.connect(self.update_execute_command)
+        self.ui.baseurlLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.threadsSpinBox.valueChanged.connect(self.update_execute_command)
         self.ui.chunk_sizeSpinBox.valueChanged.connect(self.update_execute_command)
         self.ui.headersLineEdit.cursorPositionChanged.connect(self.update_execute_command)
@@ -127,128 +109,178 @@ class MainWindow(QMainWindow):
         self.ui.scan_extLineEdit.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.baseurlCheckBox_capture.stateChanged.connect(self.update_execute_command)
 
-    def update_execute_command(self):
+    def update_execute_command(self) -> None:
         args = ["vsdownload"]
         sub_command = self.ui.base_tab_widget.tabText(self.ui.base_tab_widget.currentIndex())
         args.append(sub_command)
 
         if sub_command == "save":
-            if self.ui.inputLineEdit.text() != "":
-                args.append(f"\"{self.ui.inputLineEdit.text()}\"")
-
-            if self.ui.outputLineEdit_save.text() != "":
-                args.append("-o")
-                args.append(f"\"{self.ui.outputLineEdit_save.text()}\"")
-
-            if not self.ui.cleanupCheckBox.isChecked():
-                args.append("--no-cleanup")
-                
-            if self.ui.baseurlLineEdit_save.text() != "":
-                args.append("-b")
-                args.append(f"\"{self.ui.baseurlLineEdit_save.text()}\"")
-
-            if self.ui.verboseCheckBox.isChecked():
-                args.append("-v")
-
-            if self.ui.threadsSpinBox.value() != self.save_callargs["threads"].default:
-                args.append("-t")
-                args.append(str(self.ui.threadsSpinBox.value()))
-            
-            if self.ui.chunk_sizeSpinBox.value() != self.save_callargs["chunk_size"].default:
-                args.append("--chunk-size")
-                args.append(str(self.ui.chunk_sizeSpinBox.value()))
-
-            if self.ui.headersLineEdit.text() != "":
-                args.append("--headers")
-                args.append(f"\"{self.ui.headersLineEdit.text()}\"")
-
-            if self.ui.key_ivLineEdit.text() != "":
-                args.append("--key-iv")
-                args.append(f"\"{self.ui.key_ivLineEdit.text()}\"")
-
-            if self.ui.proxy_addressLineEdit.text() != "":
-                args.append("--proxy-address")
-                args.append(f"\"{self.ui.proxy_addressLineEdit.text()}\"")
-
-            if self.ui.ffmpeg_pathLineEdit.text() != "":
-                args.append("--ffmpeg-path")
-                args.append(f"\"{self.ui.ffmpeg_pathLineEdit.text()}\"")
-
-            if self.ui.tempdirLineEdit.text() != "":
-                args.append("--tempdir")
-                args.append(f"\"{self.ui.tempdirLineEdit.text()}\"")
-
-            if self.ui.retry_countSpinBox.value() != self.save_callargs["retry_count"].default:
-                args.append("--retry-count")
-                args.append(str(self.ui.retry_countSpinBox.value()))
-
-            if self.ui.timeoutSpinBox.value() != self.save_callargs["timeout"].default:
-                args.append("--timeout")
-                args.append(str(self.ui.timeoutSpinBox.value()))
-
-            if self.ui.pre_selectSpinBox.value() != -1:
-                args.append("--pre-select")
-                args.append(str(self.ui.pre_selectSpinBox.value()))
+            args.extend(self.generate_save_command_args())
         
         elif sub_command == "capture":
-            if self.ui.urlLineEdit.text() != "":
-                args.append(f"\"{self.ui.urlLineEdit.text()}\"")
-
-            if self.ui.driverLineEdit.text() != "":
-                args.append("--driver")
-                args.append(f"\"{self.ui.driverLineEdit.text()}\"")
-
-            if self.ui.outputLineEdit_capture.text() != "":
-                args.append("-o")
-                args.append(f"\"{self.ui.outputLineEdit_capture.text()}\"")
-
-            if self.ui.scan_extLineEdit.text() != "":
-                args.append("--scan-ext")
-                args.append(self.ui.scan_extLineEdit.text())
-
-            if self.ui.baseurlCheckBox_capture.isChecked():
-                args.append("--baseurl")
+            args.extend(self.generate_capture_command_args())
 
         self.ui.execute_command_text_browser.setText(" ".join(args))
+                
+    def generate_save_command_args(self) -> list:
+        args = []
+        
+        if self.ui.inputLineEdit.text() != "":
+            args.append(f"\"{self.ui.inputLineEdit.text()}\"")
+
+        if self.ui.outputLineEdit_save.text() != "":
+            args.append("-o")
+            args.append(f"\"{self.ui.outputLineEdit_save.text()}\"")
+
+        if not self.ui.cleanupCheckBox.isChecked():
+            args.append("--no-cleanup")
+            
+        if self.ui.verboseCheckBox.isChecked():
+            args.append("-v")
+            
+        if self.ui.baseurlLineEdit_save.text() != "":
+            args.append("-b")
+            args.append(f"\"{self.ui.baseurlLineEdit_save.text()}\"")
+
+        if self.ui.threadsSpinBox.value() != self.save_callargs["threads"].default:
+            args.append("-t")
+            args.append(str(self.ui.threadsSpinBox.value()))
+        
+        if self.ui.chunk_sizeSpinBox.value() != self.save_callargs["chunk_size"].default:
+            args.append("--chunk-size")
+            args.append(str(self.ui.chunk_sizeSpinBox.value()))
+
+        if self.ui.headersLineEdit.text() != "":
+            args.append("--headers")
+            args.append(f"\"{self.ui.headersLineEdit.text()}\"")
+
+        if self.ui.key_ivLineEdit.text() != "":
+            args.append("--key-iv")
+            args.append(f"\"{self.ui.key_ivLineEdit.text()}\"")
+
+        if self.ui.proxy_addressLineEdit.text() != "":
+            args.append("--proxy-address")
+            args.append(f"\"{self.ui.proxy_addressLineEdit.text()}\"")
+
+        if self.ui.ffmpeg_pathLineEdit.text() != "":
+            args.append("--ffmpeg-path")
+            args.append(f"\"{self.ui.ffmpeg_pathLineEdit.text()}\"")
+
+        if self.ui.tempdirLineEdit.text() != "":
+            args.append("--tempdir")
+            args.append(f"\"{self.ui.tempdirLineEdit.text()}\"")
+
+        if self.ui.retry_countSpinBox.value() != self.save_callargs["retry_count"].default:
+            args.append("--retry-count")
+            args.append(str(self.ui.retry_countSpinBox.value()))
+
+        if self.ui.timeoutSpinBox.value() != self.save_callargs["timeout"].default:
+            args.append("--timeout")
+            args.append(str(self.ui.timeoutSpinBox.value()))
+
+        if self.ui.pre_selectSpinBox.value() != -1:
+            args.append("--pre-select")
+            args.append(str(self.ui.pre_selectSpinBox.value()))
+        
+        return args
+    
+    def generate_capture_command_args(self)  -> list:
+        args = []
+
+        if self.ui.urlLineEdit.text() != "":
+            args.append(f"\"{self.ui.urlLineEdit.text()}\"")
+
+        if self.ui.driverLineEdit.text() != "":
+            args.append("--driver")
+            args.append(f"\"{self.ui.driverLineEdit.text()}\"")
+
+        if self.ui.outputLineEdit_capture.text() != "":
+            args.append("-o")
+            args.append(f"\"{self.ui.outputLineEdit_capture.text()}\"")
+
+        if self.ui.scan_extLineEdit.text() != "":
+            args.append("--scan-ext")
+            args.append(self.ui.scan_extLineEdit.text())
+
+        if self.ui.baseurlCheckBox_capture.isChecked():
+            args.append("--baseurl")
+        
+        return args
+                
+    def check_save_command_args(self) -> bool:
+        execute = False
+        
+        if self.ui.inputLineEdit.text() == "":
+            self.argument_error("input", "no input supplied")
+
+        elif self.ui.outputLineEdit_save.text() == "":
+            self.argument_error("output", "no output file specified")
+
+        else:
+            execute = True
+        
+        return execute
+
+    def check_capture_command_args(self) -> bool:
+        execute = False
+        
+        if self.ui.urlLineEdit.text() == "":
+            self.argument_error("url", "no url specified")
+
+        elif self.ui.driverLineEdit.text() == "":
+            self.argument_error("driver", "chromedriver path not specified")
+
+        elif self.ui.outputLineEdit_capture.text() == "":
+            self.argument_error("output", "no output json file specified")
+
+        else:
+            execute = True
+        
+        return execute
     
     def launch_vsdownload(self):
         execute = False
         sub_command = self.ui.base_tab_widget.tabText(self.ui.base_tab_widget.currentIndex())
 
         if sub_command == "save":
-            if self.ui.inputLineEdit.text() == "":
-                self.argument_error("input", "no input supplied")
-
-            elif self.ui.outputLineEdit_save.text() == "":
-                self.argument_error("output", "no output file specified")
-            
-            else:
-                execute = True
+            execute = self.check_save_command_args()
 
         elif sub_command == "capture":
-            if self.ui.urlLineEdit.text() == "":
-                self.argument_error("url", "no url specified")
-
-            elif self.ui.driverLineEdit.text() == "":
-                self.argument_error("driver", "chromedriver path not specified")
-
-            elif self.ui.outputLineEdit_capture.text() == "":
-                self.argument_error("output", "no output json file specified")
-            
-            else:
-                execute = True
+            execute = self.check_capture_command_args()
 
         if execute:
-            QApplication.clipboard().setText(self.ui.execute_command_text_browser.toPlainText())
             if sys.platform.lower().startswith("win"):
                 subprocess.run(self.ui.execute_command_text_browser.toPlainText(), creationflags=subprocess.CREATE_NEW_CONSOLE)
             else:
-                msg = QMessageBox()
-                msg.setWindowTitle("vsdownload")
-                msg.setIcon(QMessageBox.Icon.Information)
-                msg.setText("copied to clipboard")
-                msg.setInformativeText("cannot execute a subprocess on non windows platform")
-                msg.exec()
+                self.non_windows_platform_message()
+                                
+    def non_windows_platform_message(self) -> None:
+        QApplication.clipboard().setText(self.ui.execute_command_text_browser.toPlainText())
+        msg = QMessageBox()
+        msg.setWindowTitle("vsdownload")
+        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setText("copied to clipboard")
+        msg.setInformativeText("cannot execute a subprocess on non windows platform")
+        msg.exec()
+
+    @staticmethod
+    def argument_error(title, message) -> None:
+        msg = QMessageBox()
+        msg.setWindowTitle("argument error")
+        msg.setIcon(QMessageBox.Icon.Critical)
+        msg.setText(title)
+        msg.setInformativeText(message)
+        msg.exec()
+
+    @staticmethod
+    def about_vsdownload():
+        msg = QMessageBox()
+        msg.setWindowTitle("about vsdownload")
+        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setText(f"vsdownload v{utils.get_version()}")
+        msg.setInformativeText("developed by 360modder")
+        msg.setDetailedText("build with python & PyQt6")
+        msg.exec()
 
 
 def console_script():
@@ -259,5 +291,4 @@ def console_script():
 
 
 if __name__ == "__main__":
-    console_script()
-    # python -m vsdownload.vsdownload_gui_wrapper vsdownload_gui_wrapper.py
+    console_script() # python -m vsdownload.vsdownload_gui_wrapper vsdownload_gui_wrapper.py

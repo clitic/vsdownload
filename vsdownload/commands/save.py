@@ -79,9 +79,9 @@ class ProcessM3U8:
             json_data = json.load(f)
 
         if self.args.pre_select is None:
-            console.print(f"m3u8 urls listed inside {self.args.input}:")
+            print(f"m3u8 urls listed inside {self.args.input}:")
             for i, m3u8_url in enumerate(json_data["m3u8_urls"]):
-                console.print(f"{i+1}) {m3u8_url}")
+                print(f"{i+1}) {m3u8_url}")
             
             target_url = int(input("\nchoose a m3u8 url (1, 2, etc.): "))
             print()
@@ -128,27 +128,26 @@ class ProcessM3U8:
             self.print_exception(e)
             self._runtime_error("failed to fetch m3u8 content")
             
-    def _segments_from_variant_playlists(self, m3u8_file: m3u8.M3U8, baseurl: str) -> None:
-        console.print("m3u8 playlists listed inside m3u8 file:")
+    def _segments_from_variant_playlists(self, m3u8_file: m3u8.M3U8, baseurl: Union[str, None]) -> None:
+        print("m3u8 playlists listed inside m3u8 file:")
 
         for i, m3u8_playlists in enumerate(m3u8_file.data["playlists"]):
-            console.print(f"-------------------- {i + 1} --------------------")
+            print(f"-------------------- {i + 1} --------------------")
             for spec, val in m3u8_playlists["stream_info"].items():
-                console.print(f"{spec}: {val}")
+                print(f"{spec}: {val}")
 
         selected_playlist = int(input("\nchoose a m3u8 playlist (1, 2, etc.): "))
-        print()
         m3u8_playlist_file = m3u8_file.playlists[selected_playlist - 1]
         playlist_absolute_uri = utils.find_absolute_uri(baseurl, m3u8_playlist_file)
-        console.print(f"fetching segments from m3u8 playlist: {playlist_absolute_uri}")
+        console.print(f"\nfetching segments from m3u8 playlist: {playlist_absolute_uri}")
         return m3u8.load(playlist_absolute_uri, headers=self.headers, http_client=self.http_client).segments
 
-    def _segments_of_media_playlists(self, m3u8_file: m3u8.M3U8, baseurl: str) -> None:
+    def _segments_of_media_playlists(self, m3u8_file: m3u8.M3U8, baseurl: Union[str, None]) -> None:
         for media_stream in m3u8_file.media:
             args_dict = {key: value for key, value in self.args._get_kwargs()}
 
             if media_stream.type == "AUDIO" and media_stream.autoselect == "YES":
-                console.print("[blue bold]Info:[/blue bold] retargeting to download seperate audio stream")
+                self.print_info("retargeting to download seperate audio stream")
                 self.has_seperate_audio = True
                 self._check_ffmpeg_path()
                 args_dict.update({
@@ -159,7 +158,7 @@ class ProcessM3U8:
                 command_save(Namespace(**args_dict), check=self.check)
 
             elif media_stream.type == "SUBTITLES" and media_stream.autoselect == "YES":
-                console.print("[blue bold]Info:[/blue bold] retargeting to download subtitle stream")
+                self.print_info("retargeting to download subtitle stream")
                 self.has_subtitle = True
                 args_dict.update({
                     "input": utils.find_absolute_uri(baseurl, media_stream),
@@ -218,7 +217,7 @@ class ProcessM3U8:
         if self.args.cleanup:
             self._clean_up_task()
     
-    def _find_key(self, baseurl: str, segment: m3u8.Segment) -> Union[str, None]:
+    def _find_key(self, baseurl: Union[str, None], segment: m3u8.Segment) -> Union[str, None]:
         if self.args.key_iv is not None:
             return f"b'{self.args.key_iv.split('==>')[0]}'"
 
@@ -258,11 +257,11 @@ class ProcessM3U8:
                 # update retrycount on each failed call
                 segment_dict.update({"retrycount": segment_dict["retrycount"] + 1})
                 _save_json_file(info_filename, segment_dict)
-                console.print(f"[blue bold]Info:[/blue bold] segment {segment_dict['index']} added to retry queue {segment_dict['retrycount']}")
+                self.print_info(f"segment {segment_dict['index']} added to retry queue {segment_dict['retrycount']}")
             else:
                 print()
                 self.print_exception(e)
-                console.print("[red bold]VsdownloadError:[/red bold] download failed, re-run the command with [b]--no-cleanup[/b] flag to resume download\n")
+                console.print("[red bold]VSDownloadError:[/red bold] download failed, re-run the command with [green]--no-cleanup[/green] flag to resume download\n")
                 os._exit(1)
                 
     def _downloading_core(self, segment_dict: dict) -> None:
@@ -272,7 +271,8 @@ class ProcessM3U8:
 
         # spawns tqdm download progess bar for ts segment
         if self.args.verbose:
-            ts_file_data = tqdm.tqdm(response.iter_content(self.args.chunk_size), desc=f"{segment_dict['index']}.ts", ncols=0, total=int(ts_file_size / self.args.chunk_size), leave=False, unit="B", unit_scale=True, unit_divisor=1024)
+            ts_file_data = tqdm.tqdm(response.iter_content(self.args.chunk_size), desc=f"{segment_dict['index']}.ts", ncols=0,
+                                     total=int(ts_file_size / self.args.chunk_size), leave=False, unit="KB", unit_scale=True, unit_divisor=1024)
         else:
             ts_file_data = response.iter_content(self.args.chunk_size)
 
@@ -298,7 +298,7 @@ class ProcessM3U8:
                 except Exception as e:
                     print()
                     self.print_exception(e)
-                    console.print(f"[red bold]VsdownloadError:[/red bold] {filename} decryption failed\n")
+                    console.print(f"[red bold]VSDownloadError:[/red bold] {filename} decryption failed\n")
                     os._exit(1)
 
         # for non encrypted ts
@@ -323,7 +323,7 @@ class ProcessM3U8:
 
     # this function uses binary merge method for merging ts files
     def _ts_merge_task(self, total_ts_files: int) -> None:
-        console.log(f"\n[yellow]ts file merge task[/yellow] ==> starting in {self.args.timeout} seconds ...\n")
+        self.print_info(f"\nts file merge task starting in {self.args.timeout} seconds...\n")
         time.sleep(self.args.timeout)
 
         filename = self.merged_tsfile_path if not self.has_seperate_audio else "merged_video.ts"
@@ -336,7 +336,7 @@ class ProcessM3U8:
                     self._runtime_error(f"{i}.ts file is missing")
                 
     def _ffmpeg_covert_task(self) -> None:
-        console.log(f"\n[yellow]ffmpeg convert task[/yellow] ==> starting in {self.args.timeout} seconds ...")
+        self.print_info(f"\nffmpeg convert task starting in {self.args.timeout} seconds...")
         time.sleep(self.args.timeout)
         
         ffmpeg_command = [
@@ -354,17 +354,17 @@ class ProcessM3U8:
             ffmpeg_command.extend(["-c", "copy"])
             
         ffmpeg_command.append(self.args.output)
-        console.print(f"executing command: {' '.join(ffmpeg_command)}")
+        print(f"executing command: {' '.join(ffmpeg_command)}")
 
         try:
             subprocess.run(ffmpeg_command)
         except Exception as e:
+            self.print_info(f"temporary merged ts file is saved at {self.merged_tsfile_path}")
             self.print_exception(e)
-            console.print(f"[blue bold]Info:[/blue bold] temporary merged ts file is saved at {self.merged_tsfile_path}")
             self._runtime_error("ts conversion failed")
 
     def _clean_up_task(self) -> None:
-        console.log(f"\n[yellow]clean up task[/yellow] ==> starting in {self.args.timeout} seconds ...")
+        self.print_info(f"\nclean up task starting in {self.args.timeout} seconds...")
         time.sleep(self.args.timeout)
 
         try:
@@ -385,7 +385,7 @@ class ProcessM3U8:
             self._runtime_error("clean up task failed")
         
     def _runtime_error(self, msg: Optional[str] = "no message specified", code: Optional[int] = 1) -> NoReturn:
-        console.print(f"[red bold]VsdownloadError:[/red bold] {msg}")
+        console.print(f"[red bold]VSDownloadError:[/red bold] {msg}")
         if not self.check:
             sys.exit(code)
         else:
@@ -401,7 +401,11 @@ class ProcessM3U8:
     def print_exception(e: Exception) -> None:
         console.print(f"[red bold]{e.__class__.__name__}:[/red bold] {e.__str__()}")
                                 
-                                
+    @staticmethod
+    def print_info(msg: str) -> None:
+        console.print(f"INFO: {msg}", style="white on blue")
+
+                                        
 def command_save(args: Namespace, check: Optional[bool] = False):
     m3u8_downloader = ProcessM3U8(args, check=check)
     
@@ -411,7 +415,7 @@ def command_save(args: Namespace, check: Optional[bool] = False):
         parsed_links = m3u8_downloader.parse_log_json()	
 
     segments = m3u8_downloader.parse_m3u8(parsed_links)
-    console.print(f"file will be saved at: {args.output}")
-    console.print(f"starting download in {args.threads} thread/s\n")
+    print(f"file will be saved at: {args.output}")
+    print(f"starting download in {args.threads} thread/s\n")
     m3u8_downloader.download_in_mutiple_thread(segments, parsed_links)
     console.print(f"\nfile downloaded successfully at: [green]{args.output}[/green]")

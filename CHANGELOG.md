@@ -1,17 +1,22 @@
 # CHANGELOG.md
 
-## 1.1.06 (unreleased)
+## 1.1.08 (unreleased)
 
 Features:
 
 - Colorful console outputs
 - Verbose downloading output
-- Optimized downloads
+- Optimized downloads and gui wrapper
 - Raises RuntimeError on calling *vsdownload.save()*
+
+Changes:
+
+- Now version checking is only done by *--version* falg only
 
 Bug Fixes:
 
 - Timeout for ffmpeg convert task
+- Explicit command copy to clipboard in gui wrapper
 
 ## 1.1.02 (10/10/2021)
 

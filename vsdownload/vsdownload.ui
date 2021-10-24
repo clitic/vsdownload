@@ -92,21 +92,11 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="baseurlLabel_save">
-                <property name="text">
-                 <string>baseurl</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="1">
                <widget class="QLineEdit" name="inputLineEdit"/>
               </item>
               <item row="1" column="1">
                <widget class="QLineEdit" name="outputLineEdit_save"/>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLineEdit" name="baseurlLineEdit_save"/>
               </item>
               <item row="2" column="1">
                <widget class="QCheckBox" name="cleanupCheckBox"/>
@@ -115,13 +105,6 @@
                <widget class="QLabel" name="cleanupLabel_save">
                 <property name="text">
                  <string>cleanup</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="verboseLabel">
-                <property name="text">
-                 <string>verbose</string>
                 </property>
                </widget>
               </item>
@@ -150,13 +133,6 @@
                <widget class="QLabel" name="proxy_addressLabel">
                 <property name="text">
                  <string>proxy_address</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QCheckBox" name="verboseCheckBox">
-                <property name="text">
-                 <string/>
                 </property>
                </widget>
               </item>
@@ -267,6 +243,30 @@
                 </property>
                </widget>
               </item>
+              <item row="3" column="1">
+               <widget class="QCheckBox" name="verboseCheckBox">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QLineEdit" name="baseurlLineEdit_save"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="verboseLabel">
+                <property name="text">
+                 <string>verbose</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="baseurlLabel_save">
+                <property name="text">
+                 <string>baseurl</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>
@@ -303,8 +303,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>406</width>
-             <height>348</height>
+             <width>219</width>
+             <height>166</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">

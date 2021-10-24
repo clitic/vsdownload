@@ -1,4 +1,4 @@
-# VS Download - Video Stream Download
+# VSDownload - Video Stream (M3U8) Downloader
 
 command line program to download hls video streams from websites, m3u8 files and urls.
 
@@ -90,8 +90,7 @@ vsdownload save <m3u8 url or file> -o video.ts
 ## GUI Wrapper
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_1.jpg">
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper_2.jpg">
+  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper.jpg">
 </p>
 
 To use gui wrapper, first install PyQt6 and then run **vsdownload-gui**
@@ -105,7 +104,7 @@ $ vsdownload-gui
 
 You can also integrate vsdownload save and capture command in any python program. This is useful when you have to automate or create sub website m3u8 downloaders. First you can find or parse the m3u8 uri from a website then call *vsdownload.save()* in order to download it.
 
-- save function
+- save command function
 
 ```python
 from vsdownload import vsdownload
@@ -113,18 +112,18 @@ from vsdownload import vsdownload
 vsdownload.save("http://videoserver.com/playlist.m3u8", output="merged.mp4")
 ```
 
-- capture and save functions
+- capture and save commands at once
 
 ```python
 from vsdownload import vsdownload
 
 log_file = "stream_log.json"
 
-vsdownload.capture("http://streamingsite.com/stream.html", output=log_file, driver="chromedriver.exe")
+vsdownload.capture("http://streamingsite.com/stream.html", "chromedriver.exe", output=log_file)
 vsdownload.save(log_file, output="merged.mp4")
 ```
 
-- calling from subprocess
+- calling vsdownload through subprocess
 
 ```python
 import subprocess
