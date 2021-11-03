@@ -10,14 +10,17 @@ console = Console()
 
 
 def command_capture(args):
-    console.print("NOTE: if streams are playing but window doesn't closed automatically, then re-run the command", style="white on blue")
-    console.print("troubleshoot with flag: [green]--scan-ext m3u8[/green]")
+    console.print("[cyan]NOTE:[/cyan] if streams are playing but window doesn't closed automatically, then re-run the command")
+    console.print("[cyan]INFO:[/cyan] try troubleshooting with [green]--scan-ext m3u8[/green] flag")
 
     capabilities = DesiredCapabilities.CHROME.copy()
     capabilities["goog:loggingPrefs"] = {"performance": "ALL"}
     
     try:
         driver = webdriver.Chrome(executable_path=args.driver, desired_capabilities=capabilities)
+    except TypeError:
+        console.print("[red bold]VSDownloadError:[/red bold] use [green]--driver <chromedriver path>[/green] flag")
+        sys.exit(1)
     except Exception as e:
         console.print(f"[red bold]{e.__class__.__name__}:[/red bold] {e.__str__()}")
         console.print("[red bold]VSDownloadError:[/red bold] incorrect driver path or unsupported driver version")

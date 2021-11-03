@@ -79,7 +79,7 @@ vsdownload save log.json
 - Downloading hls video streams from m3u8 files
 
 ```bash
-vsdownload save <m3u8 url or file> -o video.ts
+vsdownload save <m3u8 url or file> -o video.mp4
 ```
 
 > In **-o/--output** flag, any ffmpeg supported extension could be provided <br> Add **--no-cleanup** flag to use resume capabilities

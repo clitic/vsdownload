@@ -27,11 +27,9 @@ class ProcessM3U8:
             args (Namespace): supplied arguments in argsparse.Namespace object
             check (Optional[bool], optional): raises RuntimeError instead of sys.exit(1). Defaults to False.
         """
-        self.args = args
-        self.check = check
+        self.args, self.check = args, check
+        self.has_seperate_audio, self.has_subtitle = False, False
         self.merged_file_size = 0
-        self.has_seperate_audio = False
-        self.has_subtitle = False
         # updating merge ts file path
         if args.output.endswith(".srt"):
             self.merged_tsfile_path = args.output.replace(".srt", ".vtt")
@@ -110,7 +108,7 @@ class ProcessM3U8:
             for seperate audio and subtitle stream this method internally call another instance of base class and downloads it
         """
         target_url, baseurl = parsed_links
-        console.print(f"fetching m3u8 content: {target_url}")
+        print(f"fetching m3u8 content: {target_url}")
 
         try:
             m3u8_file = m3u8.load(target_url, headers=self.headers, http_client=self.http_client)
@@ -130,16 +128,32 @@ class ProcessM3U8:
             
     def _segments_from_variant_playlists(self, m3u8_file: m3u8.M3U8, baseurl: Union[str, None]) -> None:
         print("m3u8 playlists listed inside m3u8 file:")
-
+        resolution_bandwidth_sum = []
+        
         for i, m3u8_playlists in enumerate(m3u8_file.data["playlists"]):
+            total_digit_sum = 0
+
             print(f"-------------------- {i + 1} --------------------")
             for spec, val in m3u8_playlists["stream_info"].items():
                 print(f"{spec}: {val}")
+                
+                if spec == "bandwidth":
+                    total_digit_sum += int(val)
+                elif spec == "resolution":
+                    total_digit_sum += int(str(val).split("x")[0]) * int(str(val).split("x")[1])
 
-        selected_playlist = int(input("\nchoose a m3u8 playlist (1, 2, etc.): "))
+            resolution_bandwidth_sum.append(total_digit_sum)
+            
+        if not self.args.maxquality:
+            selected_playlist = int(input("\nchoose a m3u8 playlist (1, 2, etc.): "))
+        else:
+            selected_playlist = resolution_bandwidth_sum.index(max(resolution_bandwidth_sum)) + 1
+            print()
+            self.print_info(f"auto selected m3u8 playlist at index {selected_playlist}")
+            
         m3u8_playlist_file = m3u8_file.playlists[selected_playlist - 1]
         playlist_absolute_uri = utils.find_absolute_uri(baseurl, m3u8_playlist_file)
-        console.print(f"\nfetching segments from m3u8 playlist: {playlist_absolute_uri}")
+        print(f"\nfetching segments from m3u8 playlist: {playlist_absolute_uri}")
         return m3u8.load(playlist_absolute_uri, headers=self.headers, http_client=self.http_client).segments
 
     def _segments_of_media_playlists(self, m3u8_file: m3u8.M3U8, baseurl: Union[str, None]) -> None:
@@ -400,10 +414,12 @@ class ProcessM3U8:
     @staticmethod
     def print_exception(e: Exception) -> None:
         console.print(f"[red bold]{e.__class__.__name__}:[/red bold] {e.__str__()}")
+        # DEBUG
+        # console.print_exception()
                                 
     @staticmethod
     def print_info(msg: str) -> None:
-        console.print(f"INFO: {msg}", style="white on blue")
+        console.print(f"[cyan]INFO:[/cyan] {msg}")
 
                                         
 def command_save(args: Namespace, check: Optional[bool] = False):
@@ -418,4 +434,4 @@ def command_save(args: Namespace, check: Optional[bool] = False):
     print(f"file will be saved at: {args.output}")
     print(f"starting download in {args.threads} thread/s\n")
     m3u8_downloader.download_in_mutiple_thread(segments, parsed_links)
-    console.print(f"\nfile downloaded successfully at: [green]{args.output}[/green]")
+    console.print(f"\n[green]file downloaded successfully at: {args.output}[/green]")

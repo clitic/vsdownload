@@ -5,7 +5,7 @@ from .commands.capture import command_capture
 from .commands.save import command_save
 
 
-__version__ = "1.1.08"
+__version__ = "1.1.21"
 app = typer.Typer(name="vsdownload", help="command line program to download hls video streams from websites, m3u8 files and urls")
 
 
@@ -21,7 +21,7 @@ def main(version: Optional[bool] = typer.Option(None, "--version", callback=vers
 @app.command(name="capture", help="capture m3u8 urls from a website")
 def call_capture(
         url: str = typer.Argument(..., help="website url to target"),
-        output: str = typer.Option("log.json", help="output website m3u8 capture logs in which path", metavar="mysite_log.json"),
+        output: str = typer.Option("log.json", "--output", "-o", help="output website m3u8 capture logs in which path", metavar="mysite_log.json"),
         driver: str = typer.Option(None, help="path of chrome driver for selenium", metavar="chromedriver.exe"),
         scan_ext: str = typer.Option("ts", help="scan network logs until --scan-ext extension is found in any one of the request url", metavar="m3u8/ts/mp4"),
         baseurl: bool = typer.Option(False, help="detect baseurl (not recommended)")
@@ -33,6 +33,7 @@ def call_save(
         input: str = typer.Argument(..., help="url|.m3u8|log.json"),
         output: str = typer.Option("merged.ts", "--output", "-o", help="path for output of downloaded video stream file", metavar="merged.ts/merged.mp4/merged.mkv"),
         cleanup: bool = typer.Option(True, help="delete temporary downloaded segments, add --no-cleanup flag to use resume capabilities"),
+        maxquality: bool = typer.Option(False, "--max-quality", "-m", help="auto select highest quality sub m3u8 playlist"),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="verbose downloading outputs and logs"),
         baseurl: str = typer.Option(None, "--baseurl", "-b", help="base url for all segments, usally needed for local m3u8 file", metavar="http://videoserver.com/", show_default=False),
         threads: int = typer.Option(5, "--threads", "-t", help="max thread count for parallel threads to download segments", metavar="1-32", min=1, max=32),
@@ -55,10 +56,10 @@ def capture(
     command_capture(Namespace(**locals()))
 
 def save(
-        input: str, output: str = "merged.ts", cleanup: bool = True, verbose: bool = False, baseurl: str = None,
-        threads: int = 5, chunk_size: int = 1024, headers: str = None, key_iv: str = None,
-        proxy_address: str = None, ffmpeg_path: str = "ffmpeg", tempdir: str = "temptsfiles",
-        retry_count: int = 10, timeout: int = 5, pre_select: int = None
+        input: str, output: str = "merged.ts", cleanup: bool = True, maxquality: bool = False,
+        verbose: bool = False, baseurl: str = None, threads: int = 5, chunk_size: int = 1024,
+        headers: str = None, key_iv: str = None, proxy_address: str = None, ffmpeg_path: str = "ffmpeg",
+        tempdir: str = "temptsfiles", retry_count: int = 10, timeout: int = 5, pre_select: int = None
     ):
 
     command_save(Namespace(**locals()), check=True)

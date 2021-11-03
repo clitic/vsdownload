@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
         self.update_placeholders_tooltips(self.save_callargs["input"], "inputLineEdit")
         self.update_placeholders_tooltips(self.save_callargs["output"], "outputLineEdit_save")
         self.update_placeholders_tooltips(self.save_callargs["cleanup"], "cleanupCheckBox")
+        self.update_placeholders_tooltips(self.save_callargs["maxquality"], "maxqualityCheckBox")
         self.update_placeholders_tooltips(self.save_callargs["verbose"], "verboseCheckBox")
         self.update_placeholders_tooltips(self.save_callargs["baseurl"], "baseurlLineEdit_save")
         self.update_placeholders_tooltips(self.save_callargs["threads"], "threadsSpinBox")
@@ -91,6 +92,7 @@ class MainWindow(QMainWindow):
         self.ui.inputLineEdit.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.outputLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.cleanupCheckBox.stateChanged.connect(self.update_execute_command)
+        self.ui.maxqualityCheckBox.stateChanged.connect(self.update_execute_command)
         self.ui.verboseCheckBox.stateChanged.connect(self.update_execute_command)
         self.ui.baseurlLineEdit_save.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.threadsSpinBox.valueChanged.connect(self.update_execute_command)
@@ -134,7 +136,10 @@ class MainWindow(QMainWindow):
 
         if not self.ui.cleanupCheckBox.isChecked():
             args.append("--no-cleanup")
-            
+
+        if self.ui.maxqualityCheckBox.isChecked():
+            args.append("-m")
+                        
         if self.ui.verboseCheckBox.isChecked():
             args.append("-v")
             
