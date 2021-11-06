@@ -10,7 +10,7 @@ $ vsdownload [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `-v, --version`: show current version of vsdownload
+* `--version`: show current version of vsdownload
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
@@ -36,7 +36,7 @@ $ vsdownload capture [OPTIONS] URL
 
 **Options**:
 
-* `--output mysite_log.json`: output website m3u8 capture logs in which path  [default: log.json]
+* `-o, --output mysite_log.json`: output website m3u8 capture logs in which path  [default: log.json]
 * `--driver chromedriver.exe`: path of chrome driver for selenium
 * `--scan-ext m3u8/ts/mp4`: scan network logs until --scan-ext extension is found in any one of the request url  [default: ts]
 * `--baseurl / --no-baseurl`: detect baseurl (not recommended)  [default: False]
@@ -60,6 +60,8 @@ $ vsdownload save [OPTIONS] INPUT
 
 * `-o, --output merged.ts/merged.mp4/merged.mkv`: path for output of downloaded video stream file  [default: merged.ts]
 * `--cleanup / --no-cleanup`: delete temporary downloaded segments, add --no-cleanup flag to use resume capabilities  [default: True]
+* `-m, --max-quality`: auto select highest quality sub m3u8 playlist  [default: False]
+* `-v, --verbose`: verbose downloading outputs and logs  [default: False]
 * `-b, --baseurl http://videoserver.com/`: base url for all segments, usally needed for local m3u8 file
 * `-t, --threads 1-32`: max thread count for parallel threads to download segments  [default: 5]
 * `--chunk-size INTEGER`: chunk size for downloading ts files (in kilobytes)  [default: 1024]

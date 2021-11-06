@@ -11,8 +11,7 @@ def get_version() -> str:
     version_file_data = open(version_file, "rt", encoding="utf-8").read()
     version_regex = r"(?<=^__version__ = ['\"])[^'\"]+(?=['\"]$)"
     try:
-        version = re.findall(version_regex, version_file_data, re.M)[0]
-        return version
+        return re.findall(version_regex, version_file_data, re.M)[0]
     except IndexError:
         raise ValueError(f"Unable to find version string in {version_file}.")
 
@@ -43,7 +42,11 @@ setup(
     install_requires=REQUIREMENTS,
     entry_points={
     "console_scripts": [
-        'vsdownload=vsdownload.vsdownload:app',
-        'vsdownload-gui=vsdownload.vsdownload_gui_wrapper:console_script',
-    ]}
+        "vsdownload=vsdownload.vsdownload:app",
+        "vsdownload-gui=vsdownload.vsdownload_gui_wrapper:console_script",
+    ]},
+    project_urls={
+        "Bug Tracker": "https://github.com/360modder/vsdownload/issues",
+        "Source": "https://github.com/360modder/vsdownload",
+    }
 )        

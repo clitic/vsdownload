@@ -1,19 +1,19 @@
 # VSDownload Changelog (DD/MM/YYYY)
 
-## 1.1.21 (04/11/2021)
+## 1.1.21 (06/11/2021)
 
 Features:
 
 - Verbose downloading output
-- Added **-m/--max-quality** option
+- Added `-m/--max-quality` option
 - Colorful console outputs
 - Optimized downloads and gui wrapper
-- Raises RuntimeError on calling *vsdownload.save()*
+- Raises RuntimeError on calling `vsdownload.save()`
 
 Changes:
 
-- *-o* option alais added to capture command *--output* option
-- Now version checking is only done by *--version* flag only
+- `-o` option alais added to capture command `--output` option
+- Now version checking is only done by `--version` flag only
 
 Bug Fixes:
 

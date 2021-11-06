@@ -33,7 +33,7 @@ def call_save(
         input: str = typer.Argument(..., help="url|.m3u8|log.json"),
         output: str = typer.Option("merged.ts", "--output", "-o", help="path for output of downloaded video stream file", metavar="merged.ts/merged.mp4/merged.mkv"),
         cleanup: bool = typer.Option(True, help="delete temporary downloaded segments, add --no-cleanup flag to use resume capabilities"),
-        maxquality: bool = typer.Option(False, "--max-quality", "-m", help="auto select highest quality sub m3u8 playlist"),
+        max_quality: bool = typer.Option(False, "--max-quality", "-m", help="auto select highest quality sub m3u8 playlist"),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="verbose downloading outputs and logs"),
         baseurl: str = typer.Option(None, "--baseurl", "-b", help="base url for all segments, usally needed for local m3u8 file", metavar="http://videoserver.com/", show_default=False),
         threads: int = typer.Option(5, "--threads", "-t", help="max thread count for parallel threads to download segments", metavar="1-32", min=1, max=32),
@@ -56,7 +56,7 @@ def capture(
     command_capture(Namespace(**locals()))
 
 def save(
-        input: str, output: str = "merged.ts", cleanup: bool = True, maxquality: bool = False,
+        input: str, output: str = "merged.ts", cleanup: bool = True, max_quality: bool = False,
         verbose: bool = False, baseurl: str = None, threads: int = 5, chunk_size: int = 1024,
         headers: str = None, key_iv: str = None, proxy_address: str = None, ffmpeg_path: str = "ffmpeg",
         tempdir: str = "temptsfiles", retry_count: int = 10, timeout: int = 5, pre_select: int = None

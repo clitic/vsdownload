@@ -144,7 +144,7 @@ class ProcessM3U8:
 
             resolution_bandwidth_sum.append(total_digit_sum)
             
-        if not self.args.maxquality:
+        if not self.args.max_quality:
             selected_playlist = int(input("\nchoose a m3u8 playlist (1, 2, etc.): "))
         else:
             selected_playlist = resolution_bandwidth_sum.index(max(resolution_bandwidth_sum)) + 1

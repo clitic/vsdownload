@@ -36,9 +36,8 @@ command line program to download hls video streams from websites, m3u8 files and
 - [x] gui support
 - [x] master m3u8 playlist parsing
 - [x] platform independent
-- [x] realtime file size prediction (arithmetic mean) and download speed
-- [x] resume support
-- [x] retry on error
+- [x] realtime file size prediction (arithmetic mean) and downloading speed
+- [x] resume and retry support
 - [ ] supports live stream download
 
 > Create an issue to request a new feature
@@ -65,7 +64,7 @@ Or install from github repository.
 pip install https://github.com/360modder/vsdownload/archive/master.zip
 ```
 
-Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.1.02/vsdownload.exe) / [gui wrapper](https://github.com/360modder/vsdownload/releases/download/v1.1.02/vsdownload_gui.zip) from [releases](https://github.com/360modder/vsdownload/releases).
+Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.1.21/vsdownload.exe) / [gui wrapper](https://github.com/360modder/vsdownload/releases/download/v1.1.21/vsdownload_gui.zip) from [releases](https://github.com/360modder/vsdownload/releases).
 
 ## Usage
 
@@ -102,7 +101,7 @@ $ vsdownload-gui
 
 ## Scripting And Automation
 
-You can also integrate vsdownload save and capture command in any python program. This is useful when you have to automate or create sub website m3u8 downloaders. First you can find or parse the m3u8 uri from a website then call *vsdownload.save()* in order to download it.
+You can also integrate vsdownload save and capture command in any python program. This is useful when you have to automate or create sub website m3u8 downloaders. First you can find or parse the m3u8 uri from a website then call `vsdownload.save()` function in order to download it.
 
 - save command function
 
@@ -112,7 +111,7 @@ from vsdownload import vsdownload
 vsdownload.save("http://videoserver.com/playlist.m3u8", output="merged.mp4")
 ```
 
-- capture and save commands at once
+- capture and save command functions
 
 ```python
 from vsdownload import vsdownload

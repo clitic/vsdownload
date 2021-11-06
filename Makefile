@@ -1,4 +1,5 @@
 VenvActivate := "./env/Scripts/activate.bat"
+SitePackages := %LOCALAPPDATA%\Programs\Python\Python38\Lib\site-packages
 
 .PHONY: help requirements updates docs venv package gui
 
@@ -13,17 +14,19 @@ help:
 	@echo  help                 shows this help message
 
 requirements:
-	@pip install --upgrade pip
+	@pip install pip --upgrade
 	@pip install virtualenv
 	@pip install -r requirements.txt
 	@pip install PyQt6
-	@pip install typer-cli
 
 updates:
 	@pyuic6 vsdownload/vsdownload.ui -x -o vsdownload/vsdownload_ui.py
 
 docs:
+	@pip install typer-cli --upgrade
 	@typer vsdownload/vsdownload.py utils docs --output docs/CLI-API.md
+	@pip install typer --upgrade
+	@pip install click --upgrade
 
 venv:
 	@python -m venv env
@@ -32,7 +35,10 @@ venv:
 	@$(VenvActivate) && python -m pip install -r requirements.txt
 
 package: venv
-	@$(VenvActivate) && pyinstaller main.py --noconfirm --name vsdownload --onefile
+	@$(VenvActivate) && pyinstaller main.py \
+	--name vsdownload --onefile --noconfirm \
+	--add-data "$(SitePackages)\selenium;selenium" --add-data "$(SitePackages)\Crypto;Crypto"
+
 	@powershell -C "Remove-Item vsdownload.spec"
 	@powershell -C "Remove-Item env -Recurse"
 	@powershell -C "Remove-Item __pycache__ -Recurse"
@@ -40,9 +46,17 @@ package: venv
 
 gui: venv
 	@$(VenvActivate) && python -m pip install PyQt6
-	@$(VenvActivate) && pyinstaller main.py --noconfirm --name vsdownload
+
+	@$(VenvActivate) && pyinstaller main.py \
+	--name vsdownload --noconfirm \
+	--add-data "$(SitePackages)\selenium;selenium" --add-data "$(SitePackages)\Crypto;Crypto"
+
 	@powershell -C "Rename-Item -Path dist -NewName dist_cli"
-	@$(VenvActivate) && pyinstaller main_gui_wrapper.py --noconfirm --name vsdownload_gui --noconsole
+
+	@$(VenvActivate) && pyinstaller main_gui_wrapper.py \
+	--name vsdownload_gui --noconfirm --noconsole \
+	--add-data "$(SitePackages)\selenium;selenium" --add-data "$(SitePackages)\Crypto;Crypto"
+
 	@powershell -C "Copy-Item -Path dist_cli/vsdownload/* -Destination dist/vsdownload_gui -Recurse -Force"
 	@powershell -C "Compress-Archive -Path dist/vsdownload_gui -DestinationPath dist/vsdownload_gui.zip"
 	@powershell -C "Remove-Item env -Recurse"
