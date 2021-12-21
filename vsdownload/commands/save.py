@@ -235,18 +235,24 @@ class ProcessM3U8:
         if self.args.key_iv is not None:
             return f"b'{self.args.key_iv.split('==>')[0]}'"
 
-        if segment.key is not None:
-            key_absolute_uri = utils.find_absolute_uri(baseurl, segment.key)
-            key = b""
+        if segment.key is None:
+            return None
+        
+        key_absolute_uri = utils.find_absolute_uri(baseurl, segment.key)
+        key = b""
+
+        try:
             for chunk in self.download_session.get(key_absolute_uri):
                 key += chunk
-            return f"{key}"
-        else:
-            return None
+        except requests.exceptions.InvalidSchema:
+            self._runtime_error(f"unable to process decryption key, {key_absolute_uri}. use --key-iv flag.")
+
+        return f"{key}"
 
     def _find_iv(self, segment: m3u8.Segment) -> Union[str, None]:
         if self.args.key_iv is not None:
-            return f"{self.args.key_iv.split('==>')[1]}"
+            iv = self.args.key_iv.split("==>")[1]
+            return str(iv) or None
 
         if segment.key is not None:
             return segment.key.iv.replace("0x", "")
