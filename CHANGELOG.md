@@ -1,5 +1,15 @@
 # VSDownload Changelog (DD/MM/YYYY)
 
+## 1.1.22 (Unreleased)
+
+Features:
+
+- New --decrypt flag
+
+Bug Fixes:
+
+- getting key and iv functions
+
 ## 1.1.21 (06/11/2021)
 
 Features:
