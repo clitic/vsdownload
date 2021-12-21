@@ -47,6 +47,7 @@ class MainWindow(QMainWindow):
         self.update_placeholders_tooltips(self.save_callargs["threads"], "threadsSpinBox")
         self.update_placeholders_tooltips(self.save_callargs["chunk_size"], "chunk_sizeSpinBox")
         self.update_placeholders_tooltips(self.save_callargs["headers"], "headersLineEdit")
+        self.update_placeholders_tooltips(self.save_callargs["decrypt"], "decryptCheckBox")
         self.update_placeholders_tooltips(self.save_callargs["key_iv"], "key_ivLineEdit")
         self.update_placeholders_tooltips(self.save_callargs["proxy_address"], "proxy_addressLineEdit")
         self.update_placeholders_tooltips(self.save_callargs["ffmpeg_path"], "ffmpeg_pathLineEdit")
@@ -98,6 +99,7 @@ class MainWindow(QMainWindow):
         self.ui.threadsSpinBox.valueChanged.connect(self.update_execute_command)
         self.ui.chunk_sizeSpinBox.valueChanged.connect(self.update_execute_command)
         self.ui.headersLineEdit.cursorPositionChanged.connect(self.update_execute_command)
+        self.ui.decryptCheckBox.stateChanged.connect(self.update_execute_command)
         self.ui.key_ivLineEdit.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.proxy_addressLineEdit.cursorPositionChanged.connect(self.update_execute_command)
         self.ui.ffmpeg_pathLineEdit.cursorPositionChanged.connect(self.update_execute_command)
@@ -159,6 +161,9 @@ class MainWindow(QMainWindow):
             args.append("--headers")
             args.append(f"\"{self.ui.headersLineEdit.text()}\"")
 
+        if not self.ui.verboseCheckBox.isChecked():
+            args.append("--no-decrypt")
+            
         if self.ui.key_ivLineEdit.text() != "":
             args.append("--key-iv")
             args.append(f"\"{self.ui.key_ivLineEdit.text()}\"")

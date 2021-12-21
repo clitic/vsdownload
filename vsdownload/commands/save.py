@@ -307,7 +307,7 @@ class ProcessM3U8:
         start = time.perf_counter() # counter to measure somewhat download speed
 
         # for encrypted ts
-        if download_ts and segment_dict["key"] is not None:
+        if download_ts and segment_dict["key"] is not None and self.args.decrypt:
             with open(filename, "wb") as f:
                 encrypted_ts_data = b""
                 for data in ts_file_data:
