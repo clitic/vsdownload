@@ -63,7 +63,7 @@ $ vsdownload save [OPTIONS] INPUT
 * `-m, --max-quality`: auto select highest quality sub m3u8 playlist  [default: False]
 * `-v, --verbose`: verbose downloading outputs and logs  [default: False]
 * `-b, --baseurl http://videoserver.com/`: base url for all segments, usally needed for local m3u8 file
-* `-t, --threads 1-32`: max thread count for parallel threads to download segments  [default: 5]
+* `-t, --threads 1-16`: max thread count for parallel threads to download segments  [default: 5]
 * `--chunk-size INTEGER`: chunk size for downloading ts files (in kilobytes)  [default: 1024]
 * `--headers headers.json`: path of header defining json file which will update headers
 * `--decrypt / --no-decrypt`: auto decrypt ts files  [default: True]

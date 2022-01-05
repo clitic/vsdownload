@@ -5,7 +5,7 @@ from .commands.capture import command_capture
 from .commands.save import command_save
 
 
-__version__ = "1.1.22"
+__version__ = "1.1.23"
 app = typer.Typer(name="vsdownload", help="command line program to download hls video streams from websites, m3u8 files and urls")
 
 
@@ -36,7 +36,7 @@ def call_save(
         max_quality: bool = typer.Option(False, "--max-quality", "-m", help="auto select highest quality sub m3u8 playlist"),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="verbose downloading outputs and logs"),
         baseurl: str = typer.Option(None, "--baseurl", "-b", help="base url for all segments, usally needed for local m3u8 file", metavar="http://videoserver.com/", show_default=False),
-        threads: int = typer.Option(5, "--threads", "-t", help="max thread count for parallel threads to download segments", metavar="1-32", min=1, max=32),
+        threads: int = typer.Option(5, "--threads", "-t", help="max thread count for parallel threads to download segments", metavar="1-16", min=1, max=16),
         chunk_size: int = typer.Option(1024, help="chunk size for downloading ts files (in kilobytes)"),
         headers: str = typer.Option(None, help="path of header defining json file which will update headers", metavar="headers.json", show_default=False),
         decrypt: bool = typer.Option(True, help="auto decrypt ts files"),

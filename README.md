@@ -1,6 +1,6 @@
 # VSDownload - Video Stream (M3U8) Downloader
 
-command line program to download hls video streams from websites, m3u8 files and urls.
+command line program to download hls video streams from websites, m3u8 files and urls. [What is m3u8 ?](https://en.wikipedia.org/wiki/M3U)
 
 <p align="center">
   a compact lightweight m3u8 downloader
@@ -23,6 +23,8 @@ command line program to download hls video streams from websites, m3u8 files and
 <p align="center">
   <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/vsdownload.gif">
 </p>
+
+There's already a great alternative to vsdownload which is [N_m3u8DL-CLI](https://github.com/nilaoda/N_m3u8DL-CLI) but it seems to only support windows platform. On the other hand vsdownload is cross platform.
 
 ## Features Implemented
 
@@ -67,6 +69,8 @@ pip install https://github.com/360modder/vsdownload/archive/master.zip
 Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.1.21/vsdownload.exe) / [gui wrapper](https://github.com/360modder/vsdownload/releases/download/v1.1.21/vsdownload_gui.zip) from [releases](https://github.com/360modder/vsdownload/releases).
 
 ## Usage
+
+- [How to get m3u8 file link ?](https://github.com/360modder/vsdownload/blob/master/docs/FAQs.md#How+to+get+m3u8+file+link+?)
 
 - Capturing m3u8 files from website and downloading hls streams
 

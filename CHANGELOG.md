@@ -1,10 +1,14 @@
 # VSDownload Changelog (DD/MM/YYYY)
 
-## 1.1.22 (Unreleased)
+## 1.1.23 (Unreleased)
 
 Features:
 
 - New --decrypt flag
+
+Changes:
+
+- Maximum threads limited to 16 (previously 32)
 
 Bug Fixes:
 

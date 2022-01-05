@@ -1,5 +1,13 @@
 # FAQs
 
+## How to get m3u8 file link ?
+
+Open your browser and visit the website which streams m3u8 media. When video get starts playing right click and inspect the webpage. Go to **Network** tab and filter m3u8 extension and copy the master or first m3u8 file link. [Read More](https://gist.github.com/tzmartin/fb1f4a8e95ef5fb79596bd4719671b5d)
+
+<p align="center">
+  <img src="https://camo.githubusercontent.com/ac935fd5ff9bdd6af30e8a3cc59eca0d836847b021762658d782d56b0dd9f0a5/68747470733a2f2f6d6f6e6f736e61702e636f6d2f66696c652f7330685846647a4b4a6e77793376323179494a367046314673673054477a2e706e67">
+</p>
+
 ## How to convert .ts to .mp4, .mkv etc. ?
 
 First download and install [ffmpeg](https://www.ffmpeg.org/download.html) and then in output flag specify your desired format.
