@@ -32,9 +32,9 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     keywords=["m3u8", "ts", "video", "stream", "downloader", "m3u8downloader"],
-    url="https://github.com/360modder/vsdownload.git",
-    author="360modder",
-    author_email="apoorv9450@gmail.com",
+    url="https://github.com/clitic/vsdownload.git",
+    author="clitic",
+    author_email="clitic21@gmail.com",
     license="MIT",
     python_requires=">=3.6",
     packages=["vsdownload", "vsdownload/commands"],
@@ -46,7 +46,7 @@ setup(
         "vsdownload-gui=vsdownload.vsdownload_gui_wrapper:console_script",
     ]},
     project_urls={
-        "Bug Tracker": "https://github.com/360modder/vsdownload/issues",
-        "Source": "https://github.com/360modder/vsdownload",
+        "Bug Tracker": "https://github.com/clitic/vsdownload/issues",
+        "Source": "https://github.com/clitic/vsdownload",
     }
 )        

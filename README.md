@@ -11,7 +11,7 @@ command line program to download hls video streams from websites, m3u8 files and
   <a href="https://www.python.org/downloads/" title="Python Version"><img src="https://img.shields.io/badge/python-%3E=_3.6-green.svg"></a>
   <a href="LICENSE" title="License: MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
   <a href="https://pypi.org/project/vsdownload/"><img src="https://badge.fury.io/py/vsdownload.svg" alt="PyPi Package Version"></a>
-  <a href="https://github.com/360modder/vsdownload"><img src="https://img.shields.io/github/repo-size/360modder/vsdownload.svg" alt="Repository Size"></a>
+  <a href="https://github.com/clitic/vsdownload"><img src="https://img.shields.io/github/repo-size/clitic/vsdownload.svg" alt="Repository Size"></a>
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@ command line program to download hls video streams from websites, m3u8 files and
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/vsdownload.gif">
+  <img src="https://raw.githubusercontent.com/clitic/vsdownload/master/images/vsdownload.gif">
 </p>
 
 There's already a great alternative to vsdownload which is [N_m3u8DL-CLI](https://github.com/nilaoda/N_m3u8DL-CLI) but it seems to only support windows platform. On the other hand vsdownload is cross platform.
@@ -63,14 +63,14 @@ pip install vsdownload
 Or install from github repository.
 
 ```bash
-pip install https://github.com/360modder/vsdownload/archive/master.zip
+pip install https://github.com/clitic/vsdownload/archive/master.zip
 ```
 
-Or you can also find a windows [executable](https://github.com/360modder/vsdownload/releases/download/v1.1.21/vsdownload.exe) / [gui wrapper](https://github.com/360modder/vsdownload/releases/download/v1.1.21/vsdownload_gui.zip) from [releases](https://github.com/360modder/vsdownload/releases).
+Or you can also find a windows [executable](https://github.com/clitic/vsdownload/releases/download/v1.1.21/vsdownload.exe) / [gui wrapper](https://github.com/clitic/vsdownload/releases/download/v1.1.21/vsdownload_gui.zip) from [releases](https://github.com/clitic/vsdownload/releases).
 
 ## Usage
 
-- [How to get m3u8 file link ?](https://github.com/360modder/vsdownload/blob/master/docs/FAQs.md#How+to+get+m3u8+file+link+?)
+- [How to get m3u8 file link ?](https://github.com/clitic/vsdownload/blob/master/docs/FAQs.md#How+to+get+m3u8+file+link+?)
 
 - Capturing m3u8 files from website and downloading hls streams
 
@@ -93,7 +93,7 @@ vsdownload save <m3u8 url or file> -o video.mp4
 ## GUI Wrapper
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/360modder/vsdownload/master/images/gui_wrapper.jpg">
+  <img src="https://raw.githubusercontent.com/clitic/vsdownload/master/images/gui_wrapper.jpg">
 </p>
 
 To use gui wrapper, first install PyQt6 and then run **vsdownload-gui**
@@ -167,6 +167,6 @@ make targets:
 
 ## License
 
-© 2021 360modder
+&copy; 2021-22 clitic
 
 This repository is licensed under the MIT license. See LICENSE for details.

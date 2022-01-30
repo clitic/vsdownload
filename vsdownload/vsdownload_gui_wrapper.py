@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
 
     def make_connections(self) -> None:
         # connecting menu bar items
-        self.ui.action_report_a_bug.triggered.connect(lambda: webbrowser.open("https://github.com/360modder/vsdownload/issues", new=2))
+        self.ui.action_report_a_bug.triggered.connect(lambda: webbrowser.open("https://github.com/clitic/vsdownload/issues", new=2))
         self.ui.action_about_vsdownload.triggered.connect(lambda: self.about_vsdownload())
         self.ui.action_about_qt.triggered.connect(lambda: QApplication.aboutQt())
         # connecting buttons
@@ -288,7 +288,7 @@ class MainWindow(QMainWindow):
         msg.setWindowTitle("about vsdownload")
         msg.setIcon(QMessageBox.Icon.Information)
         msg.setText(f"vsdownload v{utils.get_version()}")
-        msg.setInformativeText("developed by 360modder")
+        msg.setInformativeText("developed by clitic")
         msg.setDetailedText("build with python & PyQt6")
         msg.exec()
 
