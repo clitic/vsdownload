@@ -7,11 +7,12 @@ command line program to download hls video streams from websites, m3u8 files and
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/vsdownload/"><img src="https://pepy.tech/badge/vsdownload" alt="Total Downloads"></a>
-  <a href="https://www.python.org/downloads/" title="Python Version"><img src="https://img.shields.io/badge/python-%3E=_3.6-green.svg"></a>
-  <a href="LICENSE" title="License: MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
-  <a href="https://pypi.org/project/vsdownload/"><img src="https://badge.fury.io/py/vsdownload.svg" alt="PyPi Package Version"></a>
-  <a href="https://github.com/clitic/vsdownload"><img src="https://img.shields.io/github/repo-size/clitic/vsdownload.svg" alt="Repository Size"></a>
+  <img src="https://img.shields.io/badge/dynamic/json?style=flat-square&maxAge=86400&label=downloads&query=%24.total_downloads&url=https%3A%2F%2Fapi.pepy.tech%2Fapi%2Fprojects%2Fvsdownload">
+  <img src="https://img.shields.io/pypi/v/vsdownload?style=flat-square">
+  <img src="https://img.shields.io/badge/python-%3E=_3.6-green?style=flat-square"/>
+  <img src="https://img.shields.io/github/license/clitic/vsdownload?style=flat-square">
+  <img src="https://img.shields.io/github/repo-size/clitic/vsdownload?style=flat-square">
+  <img src="https://img.shields.io/tokei/lines/github/clitic/vsdownload?style=flat-square">
 </p>
 
 <p align="center">
@@ -23,8 +24,6 @@ command line program to download hls video streams from websites, m3u8 files and
 <p align="center">
   <img src="https://raw.githubusercontent.com/clitic/vsdownload/master/images/vsdownload.gif">
 </p>
-
-There's already a great alternative to vsdownload which is [N_m3u8DL-CLI](https://github.com/nilaoda/N_m3u8DL-CLI) but it seems to only support windows platform. On the other hand vsdownload is cross platform.
 
 ## Features Implemented
 
@@ -42,8 +41,6 @@ There's already a great alternative to vsdownload which is [N_m3u8DL-CLI](https:
 - [x] resume and retry support
 - [ ] supports live stream download
 
-> Create an issue to request a new feature
-
 ## Important Declaration
 
 If you are distributing downloaded video streams, first ensure that you have rights for those video streams or files.
@@ -52,9 +49,9 @@ If you are distributing downloaded video streams, first ensure that you have rig
 
 Requires*
 
-- [python3.6+](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/)
-- [chrome](https://www.google.com/chrome/) and [chrome web driver](https://chromedriver.chromium.org/downloads) (as per use cases)
-- [ffmpeg](https://www.ffmpeg.org/download.html) (as per use cases)
+- [python3.6+](https://www.python.org/downloads) and [pip](https://pip.pypa.io/en/stable/installation)
+- [ffmpeg](https://www.ffmpeg.org/download.html) (optional)
+- [chrome](https://www.google.com/chrome/) and [chrome web driver](https://chromedriver.chromium.org/downloads) (optional)
 
 ```bash
 pip install vsdownload
@@ -143,26 +140,6 @@ try:
   subprocess.run(command_args, check=True)
 except subprocess.CalledProcessError as e:
   print(f"error code: {e.returncode}")
-```
-
-## Development
-
-- [CHANGELOG.md](CHANGELOG.md)
-- Makefile
-
-```bash
-$ make help
-```
-
-```
-make targets:
- requirements         install required dependencies
- updates              updates gui wrapper ui from vsdownload.ui
- docs                 generates CLI-API.md
- venv                 create virtual envoirnment
- package              create vsdownload.exe package
- gui                  create vsdownload_gui.exe and vsdownload.exe package
- help                 shows this help message
 ```
 
 ## License
