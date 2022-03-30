@@ -203,6 +203,7 @@ class ProcessM3U8:
                 for segment in segments:
                     segment_dict = {
                         "uri": utils.find_absolute_uri(parsed_links[1], segment),
+                        "byterange": segment.byterange,
                         "key": self._find_key(parsed_links[1], segment),
                         "iv": self._find_iv(segment),
                         "index": processed_ts_index,
@@ -286,7 +287,17 @@ class ProcessM3U8:
                 
     def _downloading_core(self, segment_dict: dict) -> None:
         filename = f"{self.args.tempdir}/{segment_dict['index']}.ts"  
-        response = self.download_session.get(segment_dict["uri"], stream=True)	
+        
+        segment_header = dict(**self.headers)
+        segment_byterange = segment_dict.get("byterange")
+        if segment_byterange:
+            # RFC 8216 EXT-X-BYTERANGE
+            range_length, range_start = segment_byterange.split("@")
+            range_length = int(range_length)
+            range_start = int(range_start)
+            segment_header["Range"] = f"bytes={range_start}-{range_start + range_length - 1}"
+
+        response = self.download_session.get(segment_dict["uri"], stream=True, headers=segment_header)	
         ts_file_size = int(response.headers.get("Content-Length", 0))
 
         # spawns tqdm download progess bar for ts segment
