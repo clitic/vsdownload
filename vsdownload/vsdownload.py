@@ -5,7 +5,7 @@ from .commands.capture import command_capture
 from .commands.save import command_save
 
 
-__version__ = "1.1.23"
+__version__ = "1.1.24"
 app = typer.Typer(name="vsdownload", help="command line program to download hls video streams from websites, m3u8 files and urls")
 
 

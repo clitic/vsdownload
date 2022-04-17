@@ -1,10 +1,11 @@
 # VSDownload Changelog (DD/MM/YYYY)
 
-## 1.1.23 (Unreleased)
+## 1.1.24 (Unreleased)
 
 Features:
 
 - New --decrypt flag
+- Added support for byterange
 
 Changes:
 
