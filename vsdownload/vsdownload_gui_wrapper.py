@@ -114,13 +114,11 @@ class MainWindow(QMainWindow):
         self.ui.baseurlCheckBox_capture.stateChanged.connect(self.update_execute_command)
 
     def update_execute_command(self) -> None:
-        args = ["vsdownload"]
         sub_command = self.ui.base_tab_widget.tabText(self.ui.base_tab_widget.currentIndex())
-        args.append(sub_command)
-
+        args = ["vsdownload", sub_command]
         if sub_command == "save":
             args.extend(self.generate_save_command_args())
-        
+
         elif sub_command == "capture":
             args.extend(self.generate_capture_command_args())
 
@@ -161,7 +159,7 @@ class MainWindow(QMainWindow):
             args.append("--headers")
             args.append(f"\"{self.ui.headersLineEdit.text()}\"")
 
-        if not self.ui.verboseCheckBox.isChecked():
+        if not self.ui.decryptCheckBox.isChecked():
             args.append("--no-decrypt")
             
         if self.ui.key_ivLineEdit.text() != "":

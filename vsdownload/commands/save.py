@@ -34,7 +34,7 @@ class ProcessM3U8:
         if args.output.endswith(".srt"):
             self.merged_tsfile_path = args.output.replace(".srt", ".vtt")
         else:
-            self.merged_tsfile_path = os.path.splitext(args.output)[0] + ".ts"
+            self.merged_tsfile_path = f"{os.path.splitext(args.output)[0]}.ts"
         # check for ffmpeg installation
         if not args.output.endswith(".ts"):
             self._check_ffmpeg_path()
@@ -42,7 +42,11 @@ class ProcessM3U8:
         self.http_client = m3u8.DefaultHTTPClient()
         self.download_session = requests.Session()
         # updating headers
-        self.headers = {}
+        self.headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
+        }
+        self.download_session.headers.update(self.headers)
+
         if args.headers is not None:
             with open(self.args.headers) as f:
                 self.headers = json.load(f)
@@ -58,6 +62,26 @@ class ProcessM3U8:
             self.http_client = m3u8.DefaultHTTPClient(proxies)
             self.download_session.proxies.update(proxies)
             console.print(f"proxies are updated to: {self.download_session.proxies}")
+
+        if not self.args.input.endswith(".m3u8") or self.args.input.endswith(".html"):
+            data = self.download_session.get(self.args.input)
+
+            if data.ok:
+                m3u8_links = utils.find_urls_by_ext(data.text, "m3u8", commanurls=False)
+
+                if len(m3u8_links) == 0:
+                    self._runtime_error("no m3u8 links")
+                elif len(m3u8_links) == 1:
+                    self.args.input = m3u8_links[0]
+                    console.print(f"auto selected {self.args.input}")
+                else:
+                    for i, link in enumerate(m3u8_links, start=1):
+                        console.print(f"{i}) {link}")
+
+                    self.args.input = m3u8_links[int(input("choose a link (1, 2, etc.): ")) - 1]
+
+            else:
+                self._runtime_error(f"{self.args.input} HTTPS Error Code {data.status_code}")
 
     def parse_link_file(self) -> Tuple[str, str]:
         """parse out target m3u8 uri or file + baseurl

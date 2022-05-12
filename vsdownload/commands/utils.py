@@ -62,12 +62,14 @@ def find_urls_by_ext(text: str, ext: str, commanurls: Optional[bool] = True) -> 
     Returns:
         list: list of urls found
     """
-    regex = re.compile(rf"https?://[a-zA-Z0-9-._%/]*\.{ext}")
+    regex = re.compile(rf"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]\.{ext})")
+    # regex = re.compile(rf"https?://[a-zA-Z0-9-._%/]*\.{ext}")
     matches = re.findall(regex, text)
+    matches = map(lambda x: f"{x[0]}://{x[1]}{x[2]}", matches)
 
     if commanurls:
         return list(matches)
-        
+
     urls = []
     for match in matches:
         if match not in urls:

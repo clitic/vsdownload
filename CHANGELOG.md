@@ -1,6 +1,6 @@
 # VSDownload Changelog (DD/MM/YYYY)
 
-## 1.1.24 (Unreleased)
+## 1.1.24 (_/05/2022)
 
 Features:
 
@@ -13,7 +13,8 @@ Changes:
 
 Bug Fixes:
 
-- getting key and iv functions
+- Getting key and iv functions
+- False enable for `--no-decrypt` flag in gui
 
 ## 1.1.21 (06/11/2021)
 
