@@ -1,5 +1,9 @@
 # VSDownload - Video Stream (M3U8) Downloader
 
+> This project will no longer be maintained because it has been ported in Rust language.
+> <br>
+> Use [https://github.com/clitic/vsd](https://github.com/clitic/vsd) instead.
+
 command line program to download hls video streams from websites, m3u8 files and urls. [What is m3u8 ?](https://en.wikipedia.org/wiki/M3U)
 
 <p align="center">
@@ -52,12 +56,6 @@ Requires*
 - [python3.6+](https://www.python.org/downloads) and [pip](https://pip.pypa.io/en/stable/installation)
 - [ffmpeg](https://www.ffmpeg.org/download.html) (optional)
 - [chrome](https://www.google.com/chrome/) and [chrome web driver](https://chromedriver.chromium.org/downloads) (optional)
-
-```bash
-pip install vsdownload
-```
-
-Or install from github repository.
 
 ```bash
 pip install https://github.com/clitic/vsdownload/archive/main.zip
