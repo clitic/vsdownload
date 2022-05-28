@@ -1,8 +1,7 @@
-# VSDownload - Video Stream (M3U8) Downloader
+> **This project is deprecated and it will no longer be maintained.**
+> **This program has been rewritten in Rust located at [https://github.com/clitic/vsd](https://github.com/clitic/vsd).**
 
-> This project will no longer be maintained because it has been ported in Rust language.
-> <br>
-> Use [https://github.com/clitic/vsd](https://github.com/clitic/vsd) instead.
+# VSDownload - Video Stream (M3U8) Downloader
 
 command line program to download hls video streams from websites, m3u8 files and urls. [What is m3u8 ?](https://en.wikipedia.org/wiki/M3U)
 
